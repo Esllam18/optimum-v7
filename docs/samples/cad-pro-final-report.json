@@ -1,0 +1,426 @@
+{
+  "validation": {
+    "issues": [],
+    "errorCount": 0,
+    "warningCount": 0,
+    "suggestionCount": 0
+  },
+  "report": {
+    "rows": [
+      {
+        "code": "CONNECTOR",
+        "category": "accessory",
+        "description_ar": "كونكتور",
+        "description_en": "Connector",
+        "unit": "ea",
+        "base_quantity": 6,
+        "waste_percent": 10,
+        "quantity": 7,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "routeIds": [
+            "r1",
+            "r2",
+            "r3"
+          ],
+          "sourceLabels": [
+            "MAIN DUCT",
+            "SECONDARY-01",
+            "SECONDARY-02"
+          ]
+        }
+      },
+      {
+        "code": "ODF-144",
+        "category": "accessory",
+        "description_ar": "ODF سعة 144",
+        "description_en": "ODF 144",
+        "unit": "ea",
+        "base_quantity": 1,
+        "waste_percent": 0,
+        "quantity": 1,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "ports": 144,
+          "nodeIds": [
+            "cab"
+          ],
+          "sourceLabels": [
+            "CAB-M01"
+          ]
+        }
+      },
+      {
+        "code": "SP-1X16",
+        "category": "accessory",
+        "description_ar": "سبليتر 1:16",
+        "description_en": "Splitter 1:16",
+        "unit": "ea",
+        "base_quantity": 2,
+        "waste_percent": 0,
+        "quantity": 2,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "ratio": "1:16",
+          "nodeIds": [
+            "tb1",
+            "tb2"
+          ],
+          "sourceLabels": [
+            "TB-01",
+            "TB-02"
+          ]
+        }
+      },
+      {
+        "code": "CIVIL-UG-ROUTE",
+        "category": "civil",
+        "description_ar": "أعمال تنفيذ مسار أرضي",
+        "description_en": "Underground route installation works",
+        "unit": "m",
+        "base_quantity": 168,
+        "waste_percent": 0,
+        "quantity": 168,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "routeIds": [
+            "r1",
+            "r2",
+            "r3"
+          ],
+          "sourceLabels": [
+            "MAIN DUCT",
+            "SECONDARY-01",
+            "SECONDARY-02"
+          ],
+          "installation": "underground",
+          "networkLevel": "main",
+          "fromLabel": "CAB-M01",
+          "toLabel": "MH-01"
+        }
+      },
+      {
+        "code": "MH-TEL",
+        "category": "node",
+        "description_ar": "غرفة اتصالات",
+        "description_en": "Telecom Manhole",
+        "unit": "ea",
+        "base_quantity": 1,
+        "waste_percent": 0,
+        "quantity": 1,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#0f766e",
+          "nodeIds": [
+            "mh"
+          ],
+          "sourceLabels": [
+            "MH-01"
+          ]
+        }
+      },
+      {
+        "code": "SUBCAB-22U",
+        "category": "node",
+        "description_ar": "كابينة فرعية 22U",
+        "description_en": "22U Sub Cabinet",
+        "unit": "ea",
+        "base_quantity": 1,
+        "waste_percent": 0,
+        "quantity": 1,
+        "source_kind": "auto",
+        "notes": "الكابينة الرئيسية داخل غرفة التحكم.",
+        "metadata": {
+          "capacityU": 22,
+          "color": "#2563eb",
+          "nodeIds": [
+            "cab"
+          ],
+          "sourceLabels": [
+            "CAB-M01"
+          ]
+        }
+      },
+      {
+        "code": "TB-24C",
+        "category": "node",
+        "description_ar": "بوكس نهاية 24 كور",
+        "description_en": "24-core Termination Box",
+        "unit": "ea",
+        "base_quantity": 2,
+        "waste_percent": 0,
+        "quantity": 2,
+        "source_kind": "auto",
+        "notes": "احتياطي 4 كور داخل البوكس.",
+        "metadata": {
+          "cores": 24,
+          "color": "#2563eb",
+          "nodeIds": [
+            "tb1",
+            "tb2"
+          ],
+          "sourceLabels": [
+            "TB-01",
+            "TB-02"
+          ]
+        }
+      },
+      {
+        "code": "DUCT-4W-7/3.5",
+        "category": "route",
+        "description_ar": "ميكرو دكت 4 مسار 7/3.5",
+        "description_en": "4-way Microduct 7/3.5",
+        "unit": "m",
+        "base_quantity": 168,
+        "waste_percent": 5,
+        "quantity": 176.4,
+        "source_kind": "auto",
+        "notes": "عبور أسفل الطريق داخل ماسورة حماية.",
+        "metadata": {
+          "ways": 4,
+          "diameter": "7/3.5",
+          "color": "#16a34a",
+          "routeIds": [
+            "r1",
+            "r2",
+            "r3"
+          ],
+          "sourceLabels": [
+            "MAIN DUCT",
+            "SECONDARY-01",
+            "SECONDARY-02"
+          ],
+          "installation": "underground",
+          "networkLevel": "main",
+          "fromLabel": "CAB-M01",
+          "toLabel": "MH-01"
+        }
+      },
+      {
+        "code": "FO-24C",
+        "category": "route",
+        "description_ar": "كابل فايبر 24 كور",
+        "description_en": "24-core Fiber Cable",
+        "unit": "m",
+        "base_quantity": 168,
+        "waste_percent": 7,
+        "quantity": 179.76,
+        "source_kind": "auto",
+        "notes": "عبور أسفل الطريق داخل ماسورة حماية.",
+        "metadata": {
+          "cores": 24,
+          "color": "#f97316",
+          "routeIds": [
+            "r1",
+            "r2",
+            "r3"
+          ],
+          "sourceLabels": [
+            "MAIN DUCT",
+            "SECONDARY-01",
+            "SECONDARY-02"
+          ],
+          "installation": "underground",
+          "networkLevel": "main",
+          "fromLabel": "CAB-M01",
+          "toLabel": "MH-01"
+        }
+      }
+    ],
+    "nodeSchedule": [
+      {
+        "id": "cab",
+        "code": "SUBCAB-22U",
+        "label": "CAB-M01",
+        "description_ar": "كابينة فرعية 22U",
+        "description_en": "22U Sub Cabinet",
+        "level": "main",
+        "box_no": "M01",
+        "capacity": 144,
+        "ports": 144,
+        "core_range": "1-144",
+        "odf": "ODF-144",
+        "splitter": "",
+        "distance": "",
+        "length_m": "",
+        "width_m": "",
+        "height_m": "",
+        "accessories": "",
+        "notes": "الكابينة الرئيسية داخل غرفة التحكم."
+      },
+      {
+        "id": "mh",
+        "code": "MH-TEL",
+        "label": "MH-01",
+        "description_ar": "غرفة اتصالات",
+        "description_en": "Telecom Manhole",
+        "level": "distribution",
+        "box_no": "MH-01",
+        "capacity": 96,
+        "ports": "",
+        "core_range": "",
+        "odf": "",
+        "splitter": "",
+        "distance": "",
+        "length_m": "",
+        "width_m": "",
+        "height_m": "",
+        "accessories": "",
+        "notes": ""
+      },
+      {
+        "id": "tb1",
+        "code": "TB-24C",
+        "label": "TB-01",
+        "description_ar": "بوكس نهاية 24 كور",
+        "description_en": "24-core Termination Box",
+        "level": "terminal",
+        "box_no": "01",
+        "capacity": 24,
+        "ports": "",
+        "core_range": "1-24",
+        "odf": "",
+        "splitter": "SP-1X16",
+        "distance": "",
+        "length_m": "",
+        "width_m": "",
+        "height_m": "",
+        "accessories": "",
+        "notes": ""
+      },
+      {
+        "id": "tb2",
+        "code": "TB-24C",
+        "label": "TB-02",
+        "description_ar": "بوكس نهاية 24 كور",
+        "description_en": "24-core Termination Box",
+        "level": "terminal",
+        "box_no": "02",
+        "capacity": 24,
+        "ports": "",
+        "core_range": "25-48",
+        "odf": "",
+        "splitter": "SP-1X16",
+        "distance": "",
+        "length_m": "",
+        "width_m": "",
+        "height_m": "",
+        "accessories": "",
+        "notes": "احتياطي 4 كور داخل البوكس."
+      }
+    ],
+    "routeSchedule": [
+      {
+        "id": "r1",
+        "code": "DUCT-4W-7/3.5",
+        "label": "MAIN DUCT",
+        "description_ar": "ميكرو دكت 4 مسار 7/3.5",
+        "description_en": "4-way Microduct 7/3.5",
+        "from": "CAB-M01",
+        "to": "MH-01",
+        "level": "main",
+        "installation": "underground",
+        "base_length": 46,
+        "waste_percent": 5,
+        "planned_length": 48.3,
+        "ways": 4,
+        "diameter": "7/3.5",
+        "cable_code": "FO-24C",
+        "fiber_cores": 24,
+        "connectors": 2,
+        "open_bundle": 0,
+        "end_bundle": 0,
+        "notes": "عبور أسفل الطريق داخل ماسورة حماية."
+      },
+      {
+        "id": "r2",
+        "code": "DUCT-4W-7/3.5",
+        "label": "SECONDARY-01",
+        "description_ar": "ميكرو دكت 4 مسار 7/3.5",
+        "description_en": "4-way Microduct 7/3.5",
+        "from": "MH-01",
+        "to": "TB-01",
+        "level": "secondary",
+        "installation": "underground",
+        "base_length": 58,
+        "waste_percent": 5,
+        "planned_length": 60.9,
+        "ways": 4,
+        "diameter": "7/3.5",
+        "cable_code": "FO-24C",
+        "fiber_cores": 24,
+        "connectors": 2,
+        "open_bundle": 0,
+        "end_bundle": 0,
+        "notes": ""
+      },
+      {
+        "id": "r3",
+        "code": "DUCT-4W-7/3.5",
+        "label": "SECONDARY-02",
+        "description_ar": "ميكرو دكت 4 مسار 7/3.5",
+        "description_en": "4-way Microduct 7/3.5",
+        "from": "MH-01",
+        "to": "TB-02",
+        "level": "secondary",
+        "installation": "underground",
+        "base_length": 64,
+        "waste_percent": 5,
+        "planned_length": 67.2,
+        "ways": 4,
+        "diameter": "7/3.5",
+        "cable_code": "FO-24C",
+        "fiber_cores": 24,
+        "connectors": 2,
+        "open_bundle": 0,
+        "end_bundle": 0,
+        "notes": ""
+      }
+    ],
+    "notes": [
+      {
+        "kind": "drawing",
+        "id": "drawing",
+        "label_ar": "ملاحظات عامة للرسم",
+        "label_en": "General drawing notes",
+        "body": "يراعى مراجعة أطوال الموقع قبل الإصدار النهائي."
+      },
+      {
+        "kind": "node",
+        "id": "cab",
+        "label_ar": "CAB-M01 — ملاحظة عنصر",
+        "label_en": "CAB-M01 — node note",
+        "body": "الكابينة الرئيسية داخل غرفة التحكم."
+      },
+      {
+        "kind": "node",
+        "id": "tb2",
+        "label_ar": "TB-02 — ملاحظة عنصر",
+        "label_en": "TB-02 — node note",
+        "body": "احتياطي 4 كور داخل البوكس."
+      },
+      {
+        "kind": "route",
+        "id": "r1",
+        "label_ar": "MAIN DUCT — ملاحظة مسار",
+        "label_en": "MAIN DUCT — route note",
+        "body": "عبور أسفل الطريق داخل ماسورة حماية."
+      }
+    ],
+    "summary": {
+      "nodeCount": 4,
+      "routeCount": 3,
+      "totalRouteLength": 168,
+      "plannedRouteLength": 176.4,
+      "fiberLength": 179.76,
+      "accessoryQty": 10,
+      "materialLineCount": 9,
+      "manualLineCount": 0
+    }
+  }
+}

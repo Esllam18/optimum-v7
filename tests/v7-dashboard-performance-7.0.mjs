@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const sql=fs.readFileSync(new URL('../supabase/migrations/20260809232122_v7_dashboard_metrics_performance.sql',import.meta.url),'utf8');
+const page=fs.readFileSync(new URL('../src/v7/pages/DashboardPage.js',import.meta.url),'utf8');
+assert.match(sql,/create or replace function public\.work_dashboard_metrics/i);
+assert.match(sql,/user_permission_is_unscoped/);
+assert.match(sql,/with visible as materialized/i);
+assert.match(sql,/v_unscoped_view or app_private\.can_view_task/);
+assert.match(sql,/company_open/);
+assert.match(sql,/revoke all[\s\S]*from public,anon/i);
+assert.match(sql,/grant execute[\s\S]*to authenticated/i);
+assert.match(page,/work_dashboard_metrics/);
+assert.match(page,/work_task_query/);
+console.log('V7 dashboard performance 7.0 contract: PASS');

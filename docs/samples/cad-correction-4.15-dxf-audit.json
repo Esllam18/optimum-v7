@@ -1,0 +1,121 @@
+{
+  "file": "docs/samples/cad-correction-4.15-demo.dxf",
+  "bytes": 20882,
+  "ascii_only": true,
+  "line_count": 4190,
+  "group_pair_count": 2095,
+  "acad_version": "AC1009",
+  "terminal_eof": true,
+  "entity_counts": {
+    "CIRCLE": 2,
+    "LINE": 44,
+    "POLYLINE": 17,
+    "SEQEND": 17,
+    "TEXT": 88,
+    "VERTEX": 66
+  },
+  "layer_entity_counts": {
+    "DUCT_1W_7_3_5": 12,
+    "DUCT_4W_7_3_5": 25,
+    "FIBER_24C": 6,
+    "FRAME": 18,
+    "NODE_CABINET": 22,
+    "NODE_CIVIL": 2,
+    "NODE_JOINT": 6,
+    "NODE_TERMINAL": 44,
+    "NODE_TEXT": 46,
+    "NOTES": 2,
+    "ROUTE_TEXT": 14,
+    "TITLE_GRID": 11,
+    "TITLE_TEXT": 26
+  },
+  "route_lines": [],
+  "route_texts": [
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "MAIN ROUTE",
+      "rotation": 4.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "CAB-1 > TB-1  -  4W  -  7/3.5  -  FO-24C  -  24C  -  22.15 m",
+      "rotation": 4.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "DISTRIBUTION BRANCH 01",
+      "rotation": 0.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "CAB-1 > TB-2  -  4W  -  7/3.5  -  FO-24C  -  24C  -  19.65 m",
+      "rotation": 0.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "JOINT LINK",
+      "rotation": 0.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "TB-1 > J-1  -  1W  -  7/3.5  -  FO-24C  -  24C  -  6.15 m",
+      "rotation": 0.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "SECONDARY ROUTE",
+      "rotation": 0.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "J-1 > CAB-2  -  4W  -  7/3.5  -  FO-24C  -  24C  -  8.2 m",
+      "rotation": 0.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "TB-3 BRANCH",
+      "rotation": 0.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "CAB-2 > TB-3  -  4W  -  7/3.5  -  FO-24C  -  24C  -  25.65 m",
+      "rotation": 0.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "TB-4 BRANCH",
+      "rotation": 0.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "CAB-2 > TB-4  -  1W  -  7/3.5  -  FO-24C  -  24C  -  12.15 m",
+      "rotation": 0.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "FEEDER CABLE",
+      "rotation": 0.0,
+      "mirror_flags": 0
+    },
+    {
+      "layer": "ROUTE_TEXT",
+      "text": "TB-2 > MH-1  -  FO-24C  -  24C  -  5.3 m",
+      "rotation": 0.0,
+      "mirror_flags": 0
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

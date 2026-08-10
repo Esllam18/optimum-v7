@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const sql=fs.readFileSync('supabase/migrations/20260809230254_v7_site360_read_performance.sql','utf8');
+assert.match(sql,/user_permission_is_unscoped\(v_uid,s\.company_id,'files\.view'\)/,'Site 360 must use files fast path only for unscoped users');
+assert.match(sql,/v_unscoped_tasks:=app_private\.has_company_permission\(s\.company_id,'tasks\.view_all'\)/,'Site task fast path must require view_all');
+assert.match(sql,/user_has_resource_permission\(v_uid,d\.company_id,'drawings\.view',d\.project_id,d\.site_id,d\.folder_id,d\.id\)/,'Restricted drawing counts must enforce resource scope');
+assert.doesNotMatch(sql,/can_view_engineering_drawing\(d\.id\)/,'Site 360 must not use company-only drawing visibility');
+assert.match(sql,/claim_counts as \(/,'Cabinet claim counts must be aggregated set-wise');
+assert.match(sql,/count\(\*\) filter\(where t\.status not in\('done','cancelled'\)\)/,'Site task counts must be aggregated in one scan');
+console.log('V7 Site 360 performance + scope contract: PASS');

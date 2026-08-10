@@ -1,0 +1,56 @@
+{
+  "metrics": {
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1648,
+      "height": 110,
+      "top": 0,
+      "right": 1648,
+      "bottom": 110,
+      "left": 0
+    },
+    "palette": {
+      "x": 0,
+      "y": 110,
+      "width": 292,
+      "height": 576,
+      "top": 110,
+      "right": 292,
+      "bottom": 686,
+      "left": 0
+    },
+    "inspector": {
+      "x": 1334,
+      "y": 110,
+      "width": 314,
+      "height": 576,
+      "top": 110,
+      "right": 1648,
+      "bottom": 686,
+      "left": 1334
+    },
+    "dock": {
+      "x": 0,
+      "y": 717,
+      "width": 1648,
+      "height": 210,
+      "top": 717,
+      "right": 1648,
+      "bottom": 927,
+      "left": 0
+    },
+    "routeCards": 7,
+    "routeText": 12,
+    "routeBoxes": 0,
+    "resizeHandles": 3,
+    "workspaceButtons": [
+      "◇ الرسم",
+      "⚙ إدارة",
+      "◇ المراجعات",
+      "◇ الحصر",
+      "◇ الملفات"
+    ]
+  },
+  "errors": []
+}

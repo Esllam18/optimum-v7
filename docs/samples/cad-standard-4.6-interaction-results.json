@@ -1,0 +1,12 @@
+{
+  "nodes_after_add": 5,
+  "routes_after_connect": 4,
+  "multi_selection_count": 2,
+  "group_move_before_x": [240, 650],
+  "group_move_after_x": [300, 700],
+  "zoom_before": 0.78,
+  "zoom_after": 0.88,
+  "left_sidebar_before_after_px": [270, 270],
+  "right_sidebar_before_after_px": [300, 300],
+  "browser_page_errors": []
+}

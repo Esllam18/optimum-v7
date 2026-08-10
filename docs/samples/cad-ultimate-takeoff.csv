@@ -1,0 +1,20 @@
+#,Code,Category,Description AR,Description EN,Unit,Base Qty,Waste %,Required Qty,Source,Notes
+1,CONNECTOR,accessory,كونكتور ميكرو دكت,Microduct Connector,ea,10,10,11,auto,
+2,END-BUNDLE,accessory,نهاية باندل,End Bundle,ea,2,0,2,auto,
+3,ODF-144,accessory,ODF سعة 144,ODF 144,ea,1,0,1,auto,
+4,OPEN-BUNDLE,accessory,فتح باندل,Open Bundle,ea,2,0,2,auto,
+5,SP-1X8,accessory,سبليتر 1:8,Splitter 1:8,ea,2,0,2,auto,
+6,CIVIL-UG-ROUTE,civil,أعمال تنفيذ مسار أرضي,Underground route installation works,m,100,0,100,auto,
+7,INSTALL-AERIAL,civil,أعمال تنفيذ مسار هوائي,Aerial route installation works,m,36,0,36,auto,
+8,INSTALL-INDOOR,civil,أعمال تنفيذ مسار داخلي,Indoor route installation works,m,31,0,31,auto,
+9,CAB-MAIN-42U,node,كابينة رئيسية 42U,42U Main Cabinet,ea,1,0,1,auto,الكابينة الرئيسية داخل غرفة الاتصالات
+10,FAT-16,node,بوكس توزيع FAT سعة 16,FAT 16,ea,1,0,1,auto,
+11,FDT-48,node,نقطة توزيع FDT سعة 48,FDT 48,ea,1,0,1,auto,
+12,HH-60X60,node,هاند هول 60×60,Handhole 60x60,ea,1,0,1,auto,غرفة سحب رئيسية
+13,ODB-8,node,بوكس ODB سعة 8,ODB 8,ea,1,0,1,auto,
+14,DUCT-12W-7/3.5,route,ميكرو دكت 12 مسار 7/3.5,12-way Microduct 7/3.5,m,58,5,60.9,auto,
+15,FO-12C,route,كابل فايبر 12 كور,12-core Fiber Cable,m,36,5,37.8,auto,
+16,FO-24C,route,كابل فايبر 24 كور,24-core Fiber Cable,m,100,7,107,auto,يشمل أعمال الحفر والردم وإعادة الشيء لأصله
+17,FO-4C,route,كابل فايبر 4 كور,4-core Fiber Cable,m,31,5,32.55,auto,
+18,HDPE-63,route,ماسورة HDPE قطر 63 مم,HDPE Duct 63 mm,m,42,5,44.1,auto,يشمل أعمال الحفر والردم وإعادة الشيء لأصله
+19,WIRE-SUSP,route,واير تعليق للمسار الهوائي,Aerial suspension wire,m,36,5,37.8,auto,

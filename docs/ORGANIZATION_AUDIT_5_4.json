@@ -1,0 +1,40 @@
+{
+  "release": "5.4.0",
+  "scope": ["company", "roles", "team", "settings"],
+  "deferred": ["tasks", "calendar", "activity-log-ui"],
+  "contracts": {
+    "actions": 185,
+    "forms": 44,
+    "rpcs": 62
+  },
+  "live_integrity": {
+    "duplicate_memberships": 0,
+    "role_company_mismatch": 0,
+    "missing_profiles": 0,
+    "invalid_manager_links": 0,
+    "invalid_access_windows": 0,
+    "zero_permission_roles": 0,
+    "invalid_brand_colors": 0,
+    "invalid_company_emails": 0,
+    "invalid_websites": 0
+  },
+  "migrations_applied": [
+    "phase5_4_organization_control_center",
+    "phase5_4_identity_delegation_guard",
+    "phase5_4_organization_mutation_surface",
+    "phase5_4_provisioning_backstop",
+    "phase5_4_company_branding_validation"
+  ],
+  "tests": {
+    "npm_test": "passed",
+    "browser_workflows": "passed",
+    "visual_review": "passed",
+    "next_production_build": "not_completed_dependencies_missing_next_not_found"
+  },
+  "edge_function": {
+    "source_updated_in_package": true,
+    "live_source_redeployed_in_this_phase": false,
+    "live_member_provisioning_database_backstop": true
+  },
+  "known_data_note": "The legacy Nahda company currently has no active owner or members and was intentionally left unchanged."
+}

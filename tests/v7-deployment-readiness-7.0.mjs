@@ -1,0 +1,76 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const config = fs.readFileSync('src/v7/lib/config.js','utf8');
+const env = fs.readFileSync('.env.example','utf8');
+const gitignore = fs.readFileSync('.gitignore','utf8');
+const pkg = JSON.parse(fs.readFileSync('package.json','utf8'));
+const post = fs.readFileSync('scripts/postdeploy-smoke.mjs','utf8');
+const preflight = fs.readFileSync('scripts/release-preflight.mjs','utf8');
+const nextConfig = fs.readFileSync('next.config.mjs','utf8');
+const health = fs.readFileSync('app/api/health/route.js','utf8');
+const dockerfile = fs.readFileSync('Dockerfile','utf8');
+const workflow = fs.readFileSync('.github/workflows/v7-ci.yml','utf8');
+const releaseWorkflow = fs.readFileSync('.github/workflows/v7-release-handoff.yml','utf8');
+const envCheck = fs.readFileSync('scripts/release-env-check.mjs','utf8');
+const standalone = fs.readFileSync('scripts/prepare-standalone.mjs','utf8');
+
+assert.match(config, /process\.env\.NEXT_PUBLIC_SUPABASE_URL/);
+assert.match(config, /process\.env\.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY/);
+assert.match(config, /DEFAULT_SUPABASE_URL/);
+assert.match(config, /DEFAULT_SUPABASE_PUBLISHABLE_KEY/);
+
+assert.match(env, /^NEXT_PUBLIC_SUPABASE_URL=/m);
+assert.match(env, /^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_/m);
+assert.match(env, /^NEXT_PUBLIC_OPTIMUM_RELEASE=/m);
+assert.doesNotMatch(env, /SERVICE_ROLE|sb_secret_|SUPABASE_SECRET_KEYS\s*=/);
+assert.match(env, /OPTIMUM_APP_URL/);
+assert.match(env, /Additional Redirect URLs/);
+assert.match(gitignore, /^\.env\*$/m);
+assert.match(gitignore, /^!\.env\.example$/m);
+
+assert.equal(pkg.scripts['release:preflight'], 'node scripts/release-preflight.mjs');
+assert.equal(pkg.scripts['release:postdeploy'], 'node scripts/postdeploy-smoke.mjs');
+assert.equal(pkg.scripts['release:env:strict'], 'node scripts/release-env-check.mjs --strict');
+assert.equal(pkg.scripts['release:package'], 'node scripts/prepare-standalone.mjs');
+assert.equal(pkg.packageManager, 'npm@10.9.2');
+
+assert.match(nextConfig, /output:\s*['"]standalone['"]/);
+assert.match(health, /service:\s*['"]optimum-v7['"]/);
+assert.match(health, /schemaHead:\s*SCHEMA_HEAD/);
+assert.match(health, /X-Optimum-App/);
+assert.match(post, /BASE_URL/);
+assert.match(post, /\/api\/health/);
+assert.match(post, /health-schema-head/);
+assert.match(post, /health-release/);
+assert.match(post, /EXPECTED_RELEASE/);
+assert.match(post, /\/v7\/invite\?invite=postdeploy-invalid-token-probe/);
+assert.match(post, /x-content-type-options/);
+assert.match(post, /x-frame-options/);
+assert.match(post, /referrer-policy/);
+assert.match(post, /permissions-policy/);
+assert.match(preflight, /next-binary/);
+assert.match(preflight, /standalone-output/);
+assert.match(preflight, /ci-pipeline/);
+assert.match(envCheck, /--strict/);
+assert.match(envCheck, /NEXT_PUBLIC_OPTIMUM_RELEASE/);
+assert.match(standalone, /\.next.*standalone/);
+assert.match(standalone, /optimum-release\.json/);
+assert.match(dockerfile, /FROM deps AS builder/);
+assert.match(dockerfile, /USER nextjs/);
+assert.match(dockerfile, /HEALTHCHECK/);
+assert.match(dockerfile, /npm run release:package/);
+assert.match(workflow, /npm ci --no-audit --no-fund/);
+assert.match(workflow, /python -m playwright install --with-deps chromium/);
+assert.match(workflow, /docker build/);
+assert.match(workflow, /postdeploy-smoke\.mjs/);
+assert.match(releaseWorkflow, /release:env:strict/);
+assert.match(releaseWorkflow, /npm run test:release/);
+assert.match(releaseWorkflow, /npm run build/);
+assert.match(releaseWorkflow, /upload-artifact/);
+assert.equal(pkg.scripts['release:recovery-compare'], 'node scripts/recovery-compare.mjs');
+assert.ok(fs.existsSync('docs/V7_DEPLOYMENT_RECOVERY_10.md'));
+assert.ok(fs.existsSync('supabase/tests/v7_recovery_validation.sql'));
+assert.ok(fs.existsSync('deploy/README.md'));
+
+console.log('V7 deployment readiness 7.0 contract: PASS');

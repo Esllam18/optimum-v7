@@ -1,0 +1,88 @@
+name: Optimum V7 Release Handoff
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: GitHub Environment containing reviewed release variables
+        required: true
+        type: choice
+        options: [staging, production]
+      deployed_base_url:
+        description: Optional already-deployed URL to verify after artifact creation
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: optimum-v7-release-${{ inputs.environment }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '22.16.0'
+  NEXT_TELEMETRY_DISABLED: '1'
+  NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+  NEXT_PUBLIC_OPTIMUM_RELEASE: ${{ github.sha }}
+
+jobs:
+  release-handoff:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install exact lockfile
+        run: npm ci --no-audit --no-fund
+      - name: Strict release environment gate
+        run: npm run release:env:strict
+      - name: Full regression gate
+        run: npm run test:release
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-visual.txt
+      - run: python -m pip install -r requirements-visual.txt
+      - run: python -m playwright install --with-deps chromium
+      - name: Browser fixture matrix
+        run: python tests/v7-responsive-browser.py
+      - name: Production build
+        run: npm run build
+      - name: Prepare standalone runtime
+        run: npm run release:package
+      - name: Pack immutable handoff artifact
+        run: tar -C .next/standalone -czf optimum-v7-${{ inputs.environment }}-${GITHUB_SHA}.tgz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: optimum-v7-${{ inputs.environment }}-${{ github.sha }}
+          path: optimum-v7-${{ inputs.environment }}-${{ github.sha }}.tgz
+          retention-days: 30
+      - name: Build exact production container
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_SUPABASE_URL="${NEXT_PUBLIC_SUPABASE_URL}" \
+            --build-arg NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}" \
+            --build-arg NEXT_PUBLIC_OPTIMUM_RELEASE="${GITHUB_SHA}" \
+            -t optimum-v7:${GITHUB_SHA} .
+      - name: Smoke exact container
+        run: |
+          docker run -d --rm --name optimum-v7-release -p 3000:3000 -e OPTIMUM_RELEASE="${GITHUB_SHA}" optimum-v7:${GITHUB_SHA}
+          for i in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:3000/api/health >/tmp/health.json; then break; fi
+            sleep 1
+          done
+          cat /tmp/health.json
+          BASE_URL=http://127.0.0.1:3000 ALLOW_HTTP=1 EXPECTED_RELEASE="${GITHUB_SHA}" node scripts/postdeploy-smoke.mjs
+      - name: Optional deployed-origin smoke
+        if: ${{ inputs.deployed_base_url != '' }}
+        env:
+          BASE_URL: ${{ inputs.deployed_base_url }}
+        run: EXPECTED_RELEASE="${GITHUB_SHA}" node scripts/postdeploy-smoke.mjs
+      - if: always()
+        run: docker logs optimum-v7-release || true

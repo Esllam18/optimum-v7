@@ -1,0 +1,52 @@
+{
+  "name": "optimum-cad-studio",
+  "version": "6.9.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "portable": "node server.mjs",
+    "test": "node tests/smoke.mjs && node tests/core-fixes.mjs && node tests/usability-fixes.mjs && node tests/final-closure-4.12.mjs && node tests/cad-freeze-4.13.mjs && node tests/production-freeze-4.14.mjs && node tests/cad-correction-4.15.mjs && node tests/final-drawing-adjustments-4.16.mjs && node tests/cad-interaction-fixes-4.17.mjs && node tests/identity-provisioning-5.1.mjs && node tests/organization-identity-roles-5.2.mjs && node tests/operational-workflows-5.3.mjs && node tests/credential-reliability-5.3.1.mjs && npm run test:session && npm run test:audit && npm run test:organization && npm run test:access && node tests/first-login-session-reliability-5.5.2.mjs && node tests/workspace-loading-reliability-5.5.2.mjs && npm run test:stability && npm run test:runtime && npm run test:policy && npm run test:orgos && npm run test:work && npm run test:work67 && npm run test:pdc68 && npm run test:site69",
+    "platform": "node platform-console/server.mjs",
+    "test:session": "node tests/session-isolation-5.3.2.mjs",
+    "test:audit": "node tests/system-contract-audit-5.3.2.mjs",
+    "test:browser": "npm run test:browser:core && npm run test:browser:policy && npm run test:browser:work && npm run test:browser:excellence && npm run test:browser:pdc && npm run test:browser:site",
+    "test:release": "npm test && npm run test:v7",
+    "test:organization": "node tests/organization-control-center-5.4.mjs",
+    "test:access": "node tests/organization-access-engine-5.5.mjs",
+    "test:stability": "node tests/organization-stability-5.5.3.mjs",
+    "test:runtime": "node tests/organization-runtime-reliability-5.5.4.mjs",
+    "test:policy": "node tests/adaptive-workspace-policy-5.7.mjs",
+    "test:orgos": "node tests/organization-os-5.8.mjs",
+    "test:work": "node tests/work-delivery-os-6.6.mjs",
+    "test:browser:core": "python tests/browser-workflows-5.3.py client,orgos,limited,mobile",
+    "test:browser:policy": "python tests/browser-workflows-5.3.py policy,platform",
+    "test:browser:work": "python tests/browser-workflows-5.3.py workos,worklimited",
+    "test:work67": "node tests/work-experience-excellence-6.7.mjs",
+    "test:browser:excellence": "python tests/browser-workflows-5.3.py excellence,workmobile",
+    "test:pdc68": "node tests/project-document-control-os-6.8.mjs",
+    "test:browser:pdc": "python tests/browser-workflows-5.3.py pdc,pdclimited,pdcmobile",
+    "test:site69": "node tests/site-delivery-claim-intelligence-6.9.mjs",
+    "test:browser:site": "python tests/browser-workflows-5.3.py site69,site69limited,site69mobile",
+    "test:v7": "node tests/v7-architecture-7.0.mjs && node tests/v7-runnable-slice-7.0.mjs && node tests/v7-engineering-fast-path-7.0.mjs && node tests/v7-integrated-context-7.0.mjs && node tests/v7-performance-actions-7.0.mjs && node tests/v7-lifecycle-documents-7.0.mjs && node tests/v7-cde-claim-control-7.0.mjs && node tests/v7-cad-scale-performance-7.0.mjs && node tests/v7-project360-performance-7.0.mjs && node tests/v7-site360-performance-7.0.mjs && node tests/v7-people-security-7.0.mjs && node tests/v7-invitation-auth-flow-7.0.mjs && node tests/v7-dashboard-performance-7.0.mjs && node tests/v7-delivery-directory-7.0.mjs && node tests/v7-cad-premium-ux-7.0.mjs && node tests/v7-organization-control-7.0.mjs && node tests/v7-premium-ui-7.0.mjs && node tests/v7-readability-responsive-7.0.mjs && node tests/v7-accessibility-polish-7.0.mjs && node tests/v7-interaction-accessibility-7.0.mjs && node tests/v7-rtl-bidi-7.0.mjs && node tests/v7-native-runtime-observability-7.0.mjs && node tests/v7-deployment-readiness-7.0.mjs",
+    "test:v7:visual": "python tests/v7-responsive-browser.py",
+    "release:preflight": "node scripts/release-preflight.mjs",
+    "release:postdeploy": "node scripts/postdeploy-smoke.mjs",
+    "release:verify-local": "npm run test:release && npm run test:v7:visual && npm run release:preflight",
+    "release:recovery-compare": "node scripts/recovery-compare.mjs",
+    "release:env": "node scripts/release-env-check.mjs",
+    "release:env:strict": "node scripts/release-env-check.mjs --strict",
+    "release:package": "node scripts/prepare-standalone.mjs"
+  },
+  "dependencies": {
+    "next": "^16.3.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "engines": {
+    "node": ">=20.9"
+  },
+  "packageManager": "npm@10.9.2"
+}

@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const pkg=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url)));
+const app=fs.readFileSync(new URL('../assets/app.js',import.meta.url),'utf8');
+const api=fs.readFileSync(new URL('../assets/api.js',import.meta.url),'utf8');
+const fn=fs.readFileSync(new URL('../supabase/functions/identity-provisioning-v55/index.ts',import.meta.url),'utf8');
+assert.equal(pkg.version,'6.9.0');
+assert.match(fn,/auth\/v1\/user/);
+assert.match(fn,/method:\"PUT\"/);
+const firstLoginBlock=fn.split('async function completeFirstLogin')[1].split('Deno.serve')[0];
+assert.doesNotMatch(firstLoginBlock,/admin\.auth\.admin\.updateUserById/);
+assert.match(fn,/session_preserved/);
+assert.match(app,/await api\.ensureActiveSession\(\)/);
+assert.match(app,/session_id claim\|invalid or expired session\|session expired/i);
+assert.match(api,/signOut\(\{ scope = 'local' \}/);
+console.log('Phase 5.5.2 first-login session reliability checks passed.');

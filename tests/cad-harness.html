@@ -1,0 +1,31 @@
+<!doctype html><html lang="ar" dir="rtl" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CAD Studio Harness</title><link rel="stylesheet" href="../assets/styles.css?v=4.8.0"></head><body><div id="app"></div><script type="module">
+import {createEngineeringModule,normalizeEngineeringSnapshot} from '../assets/engineering.js?v=4.8.0';
+const catalog=[
+{code:'SUBCAB-22U',category:'node',symbol_key:'sub_cabinet',name_ar:'كابينة فرعية 22U',name_en:'22U Sub Cabinet',unit:'ea',sort_order:1,default_properties:{}},
+{code:'MH-TEL',category:'node',symbol_key:'manhole',name_ar:'غرفة اتصالات',name_en:'Telecom Manhole',unit:'ea',sort_order:2,default_properties:{}},
+{code:'TB-24C',category:'node',symbol_key:'termination_box',name_ar:'بوكس نهاية 24 كور',name_en:'24-core Termination Box',unit:'ea',sort_order:3,default_properties:{cores:24}},
+{code:'JOINT',category:'node',symbol_key:'joint',name_ar:'وصلة / Joint',name_en:'Fiber Joint',unit:'ea',sort_order:4,default_properties:{}},
+{code:'DUCT-4W-7/3.5',category:'route',symbol_key:'microduct',name_ar:'ميكرو دكت 4 مسار',name_en:'4-way Microduct',unit:'m',sort_order:10,default_properties:{ways:4,diameter:'7/3.5',color:'#22c55e'}},
+{code:'FO-24C',category:'route',symbol_key:'fiber_cable',name_ar:'كابل فايبر 24 كور',name_en:'24-core Fiber Cable',unit:'m',sort_order:11,default_properties:{cores:24,color:'#f59e0b'}},
+{code:'ODF-144',category:'accessory',symbol_key:'odf',name_ar:'ODF سعة 144',name_en:'ODF 144',unit:'ea',sort_order:20,default_properties:{ports:144}},
+{code:'SP-1X16',category:'accessory',symbol_key:'splitter',name_ar:'سبليتر 1:16',name_en:'Splitter 1:16',unit:'ea',sort_order:21,default_properties:{ratio:'1:16'}},
+{code:'CONNECTOR',category:'accessory',symbol_key:'connector',name_ar:'كونكتور',name_en:'Connector',unit:'ea',sort_order:22,default_properties:{}}
+];
+const snapshot=normalizeEngineeringSnapshot({nodes:[
+{id:'cab',catalogCode:'SUBCAB-22U',x:240,y:350,width:120,height:82,label:'CAB-M01',properties:{networkLevel:'main',capacity:144,ports:144,odfCode:'ODF-144'}},
+{id:'mh',catalogCode:'MH-TEL',x:650,y:350,width:86,height:86,label:'MH-01',properties:{networkLevel:'distribution',capacity:96}},
+{id:'tb1',catalogCode:'TB-24C',x:1080,y:220,width:82,height:60,label:'TB-01',properties:{networkLevel:'terminal',boxNo:'01',capacity:24,splitterCode:'SP-1X16',coreRange:'1-24'}},
+{id:'tb2',catalogCode:'TB-24C',x:1080,y:520,width:82,height:60,label:'TB-02',properties:{networkLevel:'terminal',boxNo:'02',capacity:24,splitterCode:'SP-1X16',coreRange:'25-48'}}],routes:[
+{id:'r1',catalogCode:'DUCT-4W-7/3.5',sourceNodeId:'cab',targetNodeId:'mh',points:[{x:240,y:350},{x:650,y:350}],label:'MAIN DUCT',manualLength:42,properties:{networkLevel:'main',installation:'underground',ways:4,cableCode:'FO-24C',fiberCores:24,connectorCount:2,fromLabel:'CAB-M01',toLabel:'MH-01'}},
+{id:'r2',catalogCode:'DUCT-4W-7/3.5',sourceNodeId:'mh',targetNodeId:'tb1',points:[{x:650,y:350},{x:820,y:220},{x:1080,y:220}],label:'SECONDARY-01',manualLength:55,properties:{networkLevel:'secondary',installation:'underground',ways:4,cableCode:'FO-24C',fiberCores:24,connectorCount:2,fromLabel:'MH-01',toLabel:'TB-01'}},
+{id:'r3',catalogCode:'DUCT-4W-7/3.5',sourceNodeId:'mh',targetNodeId:'tb2',points:[{x:650,y:350},{x:820,y:520},{x:1080,y:520}],label:'SECONDARY-02',manualLength:61,properties:{networkLevel:'secondary',installation:'underground',ways:4,cableCode:'FO-24C',fiberCores:24,connectorCount:2,fromLabel:'MH-01',toLabel:'TB-02'}}]});
+const tables={engineering_drawings:[{id:'d1',company_id:'c1',project_id:'p1',site_id:'s1',drawing_no:'P001-FIBER-SLD-001',title:'Secondary Fiber Network',discipline:'fiber',drawing_type:'secondary_network',current_revision_id:'rev1',status:'draft',updated_at:new Date().toISOString()}],engineering_revisions:[{id:'rev1',company_id:'c1',drawing_id:'d1',revision_number:0,revision_code:'R0',status:'draft',snapshot,sheet_settings:{width:1600,height:1000,grid:20,meterPerGrid:1,showGrid:true,legend:true,titleBlock:true},lock_version:1,updated_at:new Date().toISOString()}],engineering_revision_boq:[],engineering_review_marks:[],engineering_catalog_items:catalog,engineering_assets:[],engineering_document_links:[]};
+const api={select:async(table)=>structuredClone(tables[table]||[]),rpc:async()=>({}),createSignedUrl:async()=>'',uploadObject:async()=>{},deleteObject:async()=>{}};
+let module;
+const root=document.querySelector('#app');
+const render=()=>{root.innerHTML=module.page();};
+const icons=new Proxy({}, {get:()=>''});
+const icon=(name,size=18)=>`<span style="display:inline-grid;place-items:center;width:${size}px;height:${size}px">${name==='check'?'✓':name==='plus'?'+':'◇'}</span>`;
+const deps={api,state:{companyId:'c1',company:{id:'c1',name:'Optimum Engineering'},prefs:{locale:'ar'},projects:[{id:'p1',code:'P001',name:'First Fiber Optical'}],sites:[{id:'s1',project_id:'p1',code:'S01',name:'Site A'}],folders:[],documents:[],selectedProjectId:'p1',selectedSiteId:'s1'},can:()=>true,L:(ar,en)=>ar,e:(v='')=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),icon,toast:()=>{},formError:console.error,openDialog:()=>{},openDrawer:()=>{},closeOverlay:()=>{},render,pageHeader:()=>'',emptyState:()=>'',formatDateTime:()=>'',loadFilesData:async()=>{},openDocumentDetails:()=>{}};
+module=createEngineeringModule(deps);await module.load();await module.openDrawing('d1','rev1');window.__cadReady=true;
+</script></body></html>

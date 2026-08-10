@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const app=fs.readFileSync('assets/app.js','utf8');
+const access=fs.readFileSync('assets/access-engine.js','utf8');
+const platform=fs.readFileSync('assets/platform.js','utf8');
+const css=fs.readFileSync('assets/styles.css','utf8');
+const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
+assert.equal(pkg.version,'6.9.0');
+for(const token of ['createAccessEngine','accessEngine?.load','identity-provisioning-v55','saveWorkspaceDraft','access55-view-user','access55-member']) assert.ok(app.includes(token),token);
+for(const token of ['p_member','p_addon_ids','p_unit_ids','p_scope_rules','p_payload','member_access_snapshot','save_role_draft','role_draft_impact','publish_role_draft','rollback_role_version','save_workspace_settings_draft','publish_workspace_settings_draft','prepare_member_offboarding','execute_member_offboarding','save_role_addon','save_organization_unit','save_member_access_profile']) assert.ok(access.includes(token),token);
+for(const token of ['company-entitlements','set_company_entitlement_override','clear_company_entitlement_override','identity-provisioning-v55']) assert.ok(platform.includes(token),token);
+for(const token of ['access55-governance-grid','access55-org-chart','access-snapshot-hero','platform-entitlement-row']) assert.ok(css.includes(token),token);
+assert.ok(fs.existsSync('public/assets/access-engine.js'));
+assert.equal(fs.readFileSync('public/assets/access-engine.js','utf8'),access);
+console.log('Phase 5.5 organization access engine checks passed.');

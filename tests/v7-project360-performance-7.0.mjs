@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const sql=fs.readFileSync('supabase/migrations/20260809225906_v7_project360_read_performance.sql','utf8');
+assert.match(sql,/user_permission_is_unscoped\(v_uid,p\.company_id,'files\.view'\)/,'Project 360 must use the shared unscoped permission fast path');
+assert.match(sql,/v_unscoped_tasks:=app_private\.has_company_permission\(p\.company_id,'tasks\.view_all'\)/,'Project 360 task fast path requires view_all');
+assert.match(sql,/user_has_resource_permission\(v_uid,d\.company_id,'drawings\.view',d\.project_id,d\.site_id,d\.folder_id,d\.id\)/,'Restricted drawing counts must enforce drawing resource scope');
+assert.doesNotMatch(sql,/can_view_engineering_drawing\(d\.id\)/,'Project 360 must not use company-only drawing visibility for restricted counts');
+assert.match(sql,/cabinet_counts as \(/,'Site cabinet counts must be preaggregated');
+assert.match(sql,/final_claims as \(/,'Site claim status must be precomputed set-wise');
+assert.match(sql,/count\(\*\) filter\(where t\.status not in\('done','cancelled'\)\)/,'Task summary counts must be computed in one aggregate');
+console.log('V7 Project 360 performance + scope contract: PASS');

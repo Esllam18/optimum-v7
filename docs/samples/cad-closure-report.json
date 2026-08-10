@@ -1,0 +1,1492 @@
+{
+  "metadata": {
+    "drawingNo": "ELEC-14-4-P1",
+    "title": "Secondary Fiber Network Line Diagram",
+    "project": "Optimum Fiber Project",
+    "site": "Shatanouf 14-4",
+    "revision": "R0",
+    "status": "FOR CONSTRUCTION",
+    "company": "Optimum Management",
+    "date": "2026-08-04",
+    "projectCode": "232-2023-4",
+    "sheetNo": "1/1",
+    "partNo": "1/1",
+    "governorate": "Alexandria",
+    "district": "Montaza",
+    "village": "Shatanouf",
+    "coordinates": "31°11.694'N / 29°55.151'E",
+    "contractId": "232-2023-4",
+    "mainContractor": "Electro Cable Egypt",
+    "subContractor": "Optimum Management",
+    "designer": "Eng. Marwan Salem",
+    "checkedBy": "Eng. Ahmed Qasem",
+    "approvedBy": "Eng. Kamal Mohamed",
+    "drawnDate": "2026-08-04",
+    "checkedDate": "2026-08-04",
+    "approvedDate": "2026-08-04"
+  },
+  "settings": {
+    "width": 1600,
+    "height": 1000,
+    "grid": 20,
+    "meterPerGrid": 1,
+    "scale": "NTS",
+    "legend": true,
+    "frameColor": "#15835B",
+    "titleBlockData": {
+      "projectCode": "232-2023-4",
+      "sheetNo": "1/1",
+      "partNo": "1/1",
+      "governorate": "Alexandria",
+      "district": "Montaza",
+      "village": "Shatanouf",
+      "coordinates": "31°11.694'N / 29°55.151'E",
+      "contractId": "232-2023-4",
+      "mainContractor": "Electro Cable Egypt",
+      "subContractor": "Optimum Management",
+      "designer": "Eng. Marwan Salem",
+      "checkedBy": "Eng. Ahmed Qasem",
+      "approvedBy": "Eng. Kamal Mohamed",
+      "drawnDate": "2026-08-04",
+      "checkedDate": "2026-08-04",
+      "approvedDate": "2026-08-04"
+    }
+  },
+  "validation": {
+    "issues": [],
+    "errorCount": 0,
+    "warningCount": 0,
+    "suggestionCount": 0
+  },
+  "report": {
+    "rows": [
+      {
+        "code": "CONNECTOR",
+        "category": "accessory",
+        "description_ar": "كونكتور ميكرو دكت",
+        "description_en": "Microduct Connector",
+        "unit": "ea",
+        "base_quantity": 12,
+        "waste_percent": 0,
+        "quantity": 12,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#f97316",
+          "routeIds": [
+            "r1",
+            "r2",
+            "r3",
+            "r4",
+            "r5",
+            "r6"
+          ],
+          "sourceLabels": [
+            "12way / 7/3.5 / Branch A",
+            "4way / 7/3.5",
+            "1way / 7/3.5",
+            "12way / 7/3.5 / Branch B"
+          ]
+        }
+      },
+      {
+        "code": "LGX-4U",
+        "category": "accessory",
+        "description_ar": "راك LGX 4U",
+        "description_en": "LGX Rack 4U",
+        "unit": "ea",
+        "base_quantity": 1,
+        "waste_percent": 0,
+        "quantity": 1,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#7c3aed",
+          "nodeIds": [
+            "cab"
+          ],
+          "sourceLabels": [
+            "SUB-CAB 14-4"
+          ]
+        }
+      },
+      {
+        "code": "ODF-144",
+        "category": "accessory",
+        "description_ar": "ODF سعة 144",
+        "description_en": "ODF 144",
+        "unit": "ea",
+        "base_quantity": 7,
+        "waste_percent": 0,
+        "quantity": 7,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#22c55e",
+          "nodeIds": [
+            "cab",
+            "b1",
+            "b2",
+            "b3",
+            "b4",
+            "b5",
+            "b6"
+          ],
+          "sourceLabels": [
+            "SUB-CAB 14-4",
+            "TB-01",
+            "TB-02",
+            "TB-03",
+            "TB-04",
+            "TB-05",
+            "TB-06"
+          ]
+        }
+      },
+      {
+        "code": "SP-1X4",
+        "category": "accessory",
+        "description_ar": "سبليتر 1:4",
+        "description_en": "Splitter 1:4",
+        "unit": "ea",
+        "base_quantity": 6,
+        "waste_percent": 0,
+        "quantity": 6,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#7c3aed",
+          "nodeIds": [
+            "b1",
+            "b2",
+            "b3",
+            "b4",
+            "b5",
+            "b6"
+          ],
+          "sourceLabels": [
+            "TB-01",
+            "TB-02",
+            "TB-03",
+            "TB-04",
+            "TB-05",
+            "TB-06"
+          ]
+        }
+      },
+      {
+        "code": "CIVIL-UG-ROUTE",
+        "category": "civil",
+        "description_ar": "أعمال تنفيذ مسار أرضي",
+        "description_en": "Underground route installation works",
+        "unit": "m",
+        "base_quantity": 816,
+        "waste_percent": 0,
+        "quantity": 816,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#6b7280",
+          "routeIds": [
+            "r1",
+            "r2",
+            "r3",
+            "r4",
+            "r5",
+            "r6"
+          ],
+          "sourceLabels": [
+            "12way / 7/3.5 / Branch A",
+            "4way / 7/3.5",
+            "1way / 7/3.5",
+            "12way / 7/3.5 / Branch B"
+          ],
+          "installation": "underground",
+          "networkLevel": "main",
+          "fromLabel": "SUB-CAB 14-4",
+          "toLabel": "TB-01"
+        }
+      },
+      {
+        "code": "SUBCAB-22U",
+        "category": "node",
+        "description_ar": "كابينة فرعية 22U",
+        "description_en": "22U Sub Cabinet",
+        "unit": "ea",
+        "base_quantity": 1,
+        "waste_percent": 0,
+        "quantity": 1,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#ef4444",
+          "nodeIds": [
+            "cab"
+          ],
+          "sourceLabels": [
+            "SUB-CAB 14-4"
+          ]
+        }
+      },
+      {
+        "code": "TB-24C",
+        "category": "node",
+        "description_ar": "بوكس نهاية 24 كور",
+        "description_en": "24-core Termination Box",
+        "unit": "ea",
+        "base_quantity": 4,
+        "waste_percent": 0,
+        "quantity": 4,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#2563eb",
+          "cores": 24,
+          "nodeIds": [
+            "b1",
+            "b2",
+            "b4",
+            "b6"
+          ],
+          "sourceLabels": [
+            "TB-01",
+            "TB-02",
+            "TB-04",
+            "TB-06"
+          ]
+        }
+      },
+      {
+        "code": "TB-48C",
+        "category": "node",
+        "description_ar": "بوكس نهاية 48 كور",
+        "description_en": "48-core Termination Box",
+        "unit": "ea",
+        "base_quantity": 1,
+        "waste_percent": 0,
+        "quantity": 1,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#2563eb",
+          "cores": 48,
+          "nodeIds": [
+            "b3"
+          ],
+          "sourceLabels": [
+            "TB-03"
+          ]
+        }
+      },
+      {
+        "code": "TB-60C",
+        "category": "node",
+        "description_ar": "بوكس نهاية 60 كور",
+        "description_en": "60-core Termination Box",
+        "unit": "ea",
+        "base_quantity": 1,
+        "waste_percent": 0,
+        "quantity": 1,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#2563eb",
+          "cores": 60,
+          "nodeIds": [
+            "b5"
+          ],
+          "sourceLabels": [
+            "TB-05"
+          ]
+        }
+      },
+      {
+        "code": "DUCT-12W-7/3.5",
+        "category": "route",
+        "description_ar": "ميكرو دكت 12 مسار 7/3.5",
+        "description_en": "12-way Microduct 7/3.5",
+        "unit": "m",
+        "base_quantity": 262,
+        "waste_percent": 5,
+        "quantity": 275.1,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#16a34a",
+          "ways": 12,
+          "diameter": "7/3.5",
+          "routeIds": [
+            "r1",
+            "r4"
+          ],
+          "sourceLabels": [
+            "12way / 7/3.5 / Branch A",
+            "12way / 7/3.5 / Branch B"
+          ],
+          "installation": "underground",
+          "networkLevel": "main",
+          "fromLabel": "SUB-CAB 14-4",
+          "toLabel": "TB-01"
+        }
+      },
+      {
+        "code": "DUCT-1W-7/3.5",
+        "category": "route",
+        "description_ar": "ميكرو دكت 1 مسار 7/3.5",
+        "description_en": "1-way Microduct 7/3.5",
+        "unit": "m",
+        "base_quantity": 308,
+        "waste_percent": 5,
+        "quantity": 323.4,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#e11d48",
+          "ways": 1,
+          "diameter": "7/3.5",
+          "routeIds": [
+            "r3",
+            "r6"
+          ],
+          "sourceLabels": [
+            "1way / 7/3.5"
+          ],
+          "installation": "underground",
+          "networkLevel": "drop",
+          "fromLabel": "TB-02",
+          "toLabel": "TB-03"
+        }
+      },
+      {
+        "code": "DUCT-4W-7/3.5",
+        "category": "route",
+        "description_ar": "ميكرو دكت 4 مسار 7/3.5",
+        "description_en": "4-way Microduct 7/3.5",
+        "unit": "m",
+        "base_quantity": 246,
+        "waste_percent": 5,
+        "quantity": 258.3,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#dc2626",
+          "ways": 4,
+          "diameter": "7/3.5",
+          "routeIds": [
+            "r2",
+            "r5"
+          ],
+          "sourceLabels": [
+            "4way / 7/3.5"
+          ],
+          "installation": "underground",
+          "networkLevel": "secondary",
+          "fromLabel": "TB-01",
+          "toLabel": "TB-02"
+        }
+      },
+      {
+        "code": "FO-24C",
+        "category": "route",
+        "description_ar": "كابل فايبر 24 كور",
+        "description_en": "24-core Fiber Cable",
+        "unit": "m",
+        "base_quantity": 816,
+        "waste_percent": 5,
+        "quantity": 856.8,
+        "source_kind": "auto",
+        "notes": "",
+        "metadata": {
+          "color": "#0ea5e9",
+          "cores": 24,
+          "routeIds": [
+            "r1",
+            "r2",
+            "r3",
+            "r4",
+            "r5",
+            "r6"
+          ],
+          "sourceLabels": [
+            "12way / 7/3.5 / Branch A",
+            "4way / 7/3.5",
+            "1way / 7/3.5",
+            "12way / 7/3.5 / Branch B"
+          ],
+          "installation": "underground",
+          "networkLevel": "main",
+          "fromLabel": "SUB-CAB 14-4",
+          "toLabel": "TB-01"
+        }
+      }
+    ],
+    "nodeSchedule": [
+      {
+        "id": "cab",
+        "code": "SUBCAB-22U",
+        "label": "SUB-CAB 14-4",
+        "description_ar": "كابينة فرعية 22U",
+        "description_en": "22U Sub Cabinet",
+        "level": "main",
+        "box_no": "",
+        "capacity": 144,
+        "ports": 36,
+        "core_range": "",
+        "odf": "ODF-144",
+        "splitter": "",
+        "distance": 0,
+        "length_m": "",
+        "width_m": "",
+        "height_m": "",
+        "accessories": "LGX-4U",
+        "notes": ""
+      },
+      {
+        "id": "b1",
+        "code": "TB-24C",
+        "label": "TB-01",
+        "description_ar": "بوكس نهاية 24 كور",
+        "description_en": "24-core Termination Box",
+        "level": "terminal",
+        "box_no": "01",
+        "capacity": 24,
+        "ports": "",
+        "core_range": "01-04",
+        "odf": "ODF-144",
+        "splitter": "SP-1X4",
+        "distance": 190,
+        "length_m": "",
+        "width_m": "",
+        "height_m": "",
+        "accessories": "",
+        "notes": ""
+      },
+      {
+        "id": "b2",
+        "code": "TB-24C",
+        "label": "TB-02",
+        "description_ar": "بوكس نهاية 24 كور",
+        "description_en": "24-core Termination Box",
+        "level": "terminal",
+        "box_no": "02",
+        "capacity": 24,
+        "ports": "",
+        "core_range": "05-08",
+        "odf": "ODF-144",
+        "splitter": "SP-1X4",
+        "distance": 157,
+        "length_m": "",
+        "width_m": "",
+        "height_m": "",
+        "accessories": "",
+        "notes": ""
+      },
+      {
+        "id": "b3",
+        "code": "TB-48C",
+        "label": "TB-03",
+        "description_ar": "بوكس نهاية 48 كور",
+        "description_en": "48-core Termination Box",
+        "level": "terminal",
+        "box_no": "03",
+        "capacity": 48,
+        "ports": "",
+        "core_range": "09-12",
+        "odf": "ODF-144",
+        "splitter": "SP-1X4",
+        "distance": 124,
+        "length_m": "",
+        "width_m": "",
+        "height_m": "",
+        "accessories": "",
+        "notes": ""
+      },
+      {
+        "id": "b4",
+        "code": "TB-24C",
+        "label": "TB-04",
+        "description_ar": "بوكس نهاية 24 كور",
+        "description_en": "24-core Termination Box",
+        "level": "terminal",
+        "box_no": "04",
+        "capacity": 24,
+        "ports": "",
+        "core_range": "13-16",
+        "odf": "ODF-144",
+        "splitter": "SP-1X4",
+        "distance": 72,
+        "length_m": "",
+        "width_m": "",
+        "height_m": "",
+        "accessories": "",
+        "notes": ""
+      },
+      {
+        "id": "b5",
+        "code": "TB-60C",
+        "label": "TB-05",
+        "description_ar": "بوكس نهاية 60 كور",
+        "description_en": "60-core Termination Box",
+        "level": "terminal",
+        "box_no": "05",
+        "capacity": 60,
+        "ports": "",
+        "core_range": "17-20",
+        "odf": "ODF-144",
+        "splitter": "SP-1X4",
+        "distance": 89,
+        "length_m": "",
+        "width_m": "",
+        "height_m": "",
+        "accessories": "",
+        "notes": ""
+      },
+      {
+        "id": "b6",
+        "code": "TB-24C",
+        "label": "TB-06",
+        "description_ar": "بوكس نهاية 24 كور",
+        "description_en": "24-core Termination Box",
+        "level": "terminal",
+        "box_no": "06",
+        "capacity": 24,
+        "ports": "",
+        "core_range": "21-24",
+        "odf": "ODF-144",
+        "splitter": "SP-1X4",
+        "distance": 184,
+        "length_m": "",
+        "width_m": "",
+        "height_m": "",
+        "accessories": "",
+        "notes": ""
+      }
+    ],
+    "routeSchedule": [
+      {
+        "id": "r1",
+        "code": "DUCT-12W-7/3.5",
+        "label": "12way / 7/3.5 / Branch A",
+        "description_ar": "ميكرو دكت 12 مسار 7/3.5",
+        "description_en": "12-way Microduct 7/3.5",
+        "from": "SUB-CAB 14-4",
+        "to": "TB-01",
+        "level": "main",
+        "installation": "underground",
+        "base_length": 190,
+        "waste_percent": 5,
+        "planned_length": 199.5,
+        "ways": 12,
+        "diameter": "7/3.5",
+        "cable_code": "FO-24C",
+        "fiber_cores": 24,
+        "connectors": 2,
+        "open_bundle": 0,
+        "end_bundle": 0,
+        "notes": ""
+      },
+      {
+        "id": "r2",
+        "code": "DUCT-4W-7/3.5",
+        "label": "4way / 7/3.5",
+        "description_ar": "ميكرو دكت 4 مسار 7/3.5",
+        "description_en": "4-way Microduct 7/3.5",
+        "from": "TB-01",
+        "to": "TB-02",
+        "level": "secondary",
+        "installation": "underground",
+        "base_length": 157,
+        "waste_percent": 5,
+        "planned_length": 164.85,
+        "ways": 4,
+        "diameter": "7/3.5",
+        "cable_code": "FO-24C",
+        "fiber_cores": 24,
+        "connectors": 2,
+        "open_bundle": 0,
+        "end_bundle": 0,
+        "notes": ""
+      },
+      {
+        "id": "r3",
+        "code": "DUCT-1W-7/3.5",
+        "label": "1way / 7/3.5",
+        "description_ar": "ميكرو دكت 1 مسار 7/3.5",
+        "description_en": "1-way Microduct 7/3.5",
+        "from": "TB-02",
+        "to": "TB-03",
+        "level": "drop",
+        "installation": "underground",
+        "base_length": 124,
+        "waste_percent": 5,
+        "planned_length": 130.2,
+        "ways": 1,
+        "diameter": "7/3.5",
+        "cable_code": "FO-24C",
+        "fiber_cores": 24,
+        "connectors": 2,
+        "open_bundle": 0,
+        "end_bundle": 0,
+        "notes": ""
+      },
+      {
+        "id": "r4",
+        "code": "DUCT-12W-7/3.5",
+        "label": "12way / 7/3.5 / Branch B",
+        "description_ar": "ميكرو دكت 12 مسار 7/3.5",
+        "description_en": "12-way Microduct 7/3.5",
+        "from": "SUB-CAB 14-4",
+        "to": "TB-04",
+        "level": "main",
+        "installation": "underground",
+        "base_length": 72,
+        "waste_percent": 5,
+        "planned_length": 75.6,
+        "ways": 12,
+        "diameter": "7/3.5",
+        "cable_code": "FO-24C",
+        "fiber_cores": 24,
+        "connectors": 2,
+        "open_bundle": 0,
+        "end_bundle": 0,
+        "notes": ""
+      },
+      {
+        "id": "r5",
+        "code": "DUCT-4W-7/3.5",
+        "label": "4way / 7/3.5",
+        "description_ar": "ميكرو دكت 4 مسار 7/3.5",
+        "description_en": "4-way Microduct 7/3.5",
+        "from": "TB-04",
+        "to": "TB-05",
+        "level": "secondary",
+        "installation": "underground",
+        "base_length": 89,
+        "waste_percent": 5,
+        "planned_length": 93.45,
+        "ways": 4,
+        "diameter": "7/3.5",
+        "cable_code": "FO-24C",
+        "fiber_cores": 24,
+        "connectors": 2,
+        "open_bundle": 0,
+        "end_bundle": 0,
+        "notes": ""
+      },
+      {
+        "id": "r6",
+        "code": "DUCT-1W-7/3.5",
+        "label": "1way / 7/3.5",
+        "description_ar": "ميكرو دكت 1 مسار 7/3.5",
+        "description_en": "1-way Microduct 7/3.5",
+        "from": "TB-05",
+        "to": "TB-06",
+        "level": "drop",
+        "installation": "underground",
+        "base_length": 184,
+        "waste_percent": 5,
+        "planned_length": 193.2,
+        "ways": 1,
+        "diameter": "7/3.5",
+        "cable_code": "FO-24C",
+        "fiber_cores": 24,
+        "connectors": 2,
+        "open_bundle": 0,
+        "end_bundle": 0,
+        "notes": ""
+      }
+    ],
+    "notes": [
+      {
+        "kind": "drawing",
+        "id": "drawing",
+        "label_ar": "ملاحظات عامة للرسم",
+        "label_en": "General drawing notes",
+        "body": "Secondary network line diagram. All lengths shall be verified on site before installation."
+      }
+    ],
+    "summary": {
+      "nodeCount": 7,
+      "routeCount": 6,
+      "totalRouteLength": 816,
+      "plannedRouteLength": 856.8,
+      "fiberLength": 856.8,
+      "accessoryQty": 26,
+      "materialLineCount": 13,
+      "manualLineCount": 0
+    }
+  },
+  "snapshot": {
+    "version": 5,
+    "generalNotes": "Secondary network line diagram. All lengths shall be verified on site before installation.",
+    "takeoffSettings": {
+      "routeWastePercent": 5,
+      "cableWastePercent": 5,
+      "connectorReservePercent": 0,
+      "includeInstallationWorks": true,
+      "includeAerialWire": true,
+      "includeCivilWorks": true
+    },
+    "nodes": [
+      {
+        "id": "cab",
+        "catalogCode": "SUBCAB-22U",
+        "x": 720,
+        "y": 130,
+        "width": 120,
+        "height": 82,
+        "label": "SUB-CAB 14-4",
+        "rotation": 0,
+        "labelOffset": {
+          "x": 38,
+          "y": -38
+        },
+        "properties": {
+          "networkLevel": "main",
+          "businessRole": "main",
+          "boxNo": "",
+          "capacity": 144,
+          "ports": 36,
+          "coreRange": "",
+          "lengthM": null,
+          "widthM": null,
+          "heightM": null,
+          "distance": 0,
+          "odfCode": "ODF-144",
+          "splitterCode": "",
+          "accessories": [
+            "LGX-4U"
+          ],
+          "manufacturer": "",
+          "model": "",
+          "locationCode": "",
+          "room": "",
+          "elevation": "",
+          "status": "new",
+          "notes": ""
+        }
+      },
+      {
+        "id": "b1",
+        "catalogCode": "TB-24C",
+        "x": 230,
+        "y": 250,
+        "width": 74,
+        "height": 54,
+        "label": "TB-01",
+        "rotation": 0,
+        "labelOffset": {
+          "x": 38,
+          "y": -38
+        },
+        "properties": {
+          "networkLevel": "terminal",
+          "businessRole": "terminal",
+          "boxNo": "01",
+          "capacity": 24,
+          "ports": null,
+          "coreRange": "01-04",
+          "lengthM": null,
+          "widthM": null,
+          "heightM": null,
+          "distance": 190,
+          "odfCode": "ODF-144",
+          "splitterCode": "SP-1X4",
+          "accessories": [],
+          "manufacturer": "",
+          "model": "",
+          "locationCode": "",
+          "room": "",
+          "elevation": "",
+          "status": "new",
+          "notes": ""
+        }
+      },
+      {
+        "id": "b2",
+        "catalogCode": "TB-24C",
+        "x": 230,
+        "y": 430,
+        "width": 74,
+        "height": 54,
+        "label": "TB-02",
+        "rotation": 0,
+        "labelOffset": {
+          "x": 38,
+          "y": -38
+        },
+        "properties": {
+          "networkLevel": "terminal",
+          "businessRole": "terminal",
+          "boxNo": "02",
+          "capacity": 24,
+          "ports": null,
+          "coreRange": "05-08",
+          "lengthM": null,
+          "widthM": null,
+          "heightM": null,
+          "distance": 157,
+          "odfCode": "ODF-144",
+          "splitterCode": "SP-1X4",
+          "accessories": [],
+          "manufacturer": "",
+          "model": "",
+          "locationCode": "",
+          "room": "",
+          "elevation": "",
+          "status": "new",
+          "notes": ""
+        }
+      },
+      {
+        "id": "b3",
+        "catalogCode": "TB-48C",
+        "x": 230,
+        "y": 620,
+        "width": 74,
+        "height": 54,
+        "label": "TB-03",
+        "rotation": 0,
+        "labelOffset": {
+          "x": 38,
+          "y": -38
+        },
+        "properties": {
+          "networkLevel": "terminal",
+          "businessRole": "terminal",
+          "boxNo": "03",
+          "capacity": 48,
+          "ports": null,
+          "coreRange": "09-12",
+          "lengthM": null,
+          "widthM": null,
+          "heightM": null,
+          "distance": 124,
+          "odfCode": "ODF-144",
+          "splitterCode": "SP-1X4",
+          "accessories": [],
+          "manufacturer": "",
+          "model": "",
+          "locationCode": "",
+          "room": "",
+          "elevation": "",
+          "status": "new",
+          "notes": ""
+        }
+      },
+      {
+        "id": "b4",
+        "catalogCode": "TB-24C",
+        "x": 1040,
+        "y": 250,
+        "width": 74,
+        "height": 54,
+        "label": "TB-04",
+        "rotation": 0,
+        "labelOffset": {
+          "x": 38,
+          "y": -38
+        },
+        "properties": {
+          "networkLevel": "terminal",
+          "businessRole": "terminal",
+          "boxNo": "04",
+          "capacity": 24,
+          "ports": null,
+          "coreRange": "13-16",
+          "lengthM": null,
+          "widthM": null,
+          "heightM": null,
+          "distance": 72,
+          "odfCode": "ODF-144",
+          "splitterCode": "SP-1X4",
+          "accessories": [],
+          "manufacturer": "",
+          "model": "",
+          "locationCode": "",
+          "room": "",
+          "elevation": "",
+          "status": "new",
+          "notes": ""
+        }
+      },
+      {
+        "id": "b5",
+        "catalogCode": "TB-60C",
+        "x": 1040,
+        "y": 430,
+        "width": 74,
+        "height": 54,
+        "label": "TB-05",
+        "rotation": 0,
+        "labelOffset": {
+          "x": 38,
+          "y": -38
+        },
+        "properties": {
+          "networkLevel": "terminal",
+          "businessRole": "terminal",
+          "boxNo": "05",
+          "capacity": 60,
+          "ports": null,
+          "coreRange": "17-20",
+          "lengthM": null,
+          "widthM": null,
+          "heightM": null,
+          "distance": 89,
+          "odfCode": "ODF-144",
+          "splitterCode": "SP-1X4",
+          "accessories": [],
+          "manufacturer": "",
+          "model": "",
+          "locationCode": "",
+          "room": "",
+          "elevation": "",
+          "status": "new",
+          "notes": ""
+        }
+      },
+      {
+        "id": "b6",
+        "catalogCode": "TB-24C",
+        "x": 1040,
+        "y": 620,
+        "width": 74,
+        "height": 54,
+        "label": "TB-06",
+        "rotation": 0,
+        "labelOffset": {
+          "x": 38,
+          "y": -38
+        },
+        "properties": {
+          "networkLevel": "terminal",
+          "businessRole": "terminal",
+          "boxNo": "06",
+          "capacity": 24,
+          "ports": null,
+          "coreRange": "21-24",
+          "lengthM": null,
+          "widthM": null,
+          "heightM": null,
+          "distance": 184,
+          "odfCode": "ODF-144",
+          "splitterCode": "SP-1X4",
+          "accessories": [],
+          "manufacturer": "",
+          "model": "",
+          "locationCode": "",
+          "room": "",
+          "elevation": "",
+          "status": "new",
+          "notes": ""
+        }
+      }
+    ],
+    "routes": [
+      {
+        "id": "r1",
+        "catalogCode": "DUCT-12W-7/3.5",
+        "points": [
+          {
+            "x": 720,
+            "y": 130
+          },
+          {
+            "x": 475,
+            "y": 106
+          },
+          {
+            "x": 475,
+            "y": 226
+          },
+          {
+            "x": 230,
+            "y": 250
+          }
+        ],
+        "label": "12way / 7/3.5 / Branch A",
+        "labelOffset": {
+          "x": -36,
+          "y": -25
+        },
+        "manualLength": 190,
+        "sourceNodeId": "cab",
+        "targetNodeId": "b1",
+        "properties": {
+          "networkLevel": "main",
+          "installation": "underground",
+          "pathStyle": "orthogonal",
+          "cableCode": "FO-24C",
+          "fiberCores": 24,
+          "ways": 12,
+          "diameter": "7/3.5",
+          "connectorCount": 2,
+          "openBundle": 0,
+          "endBundle": 0,
+          "routeWastePercent": null,
+          "cableWastePercent": null,
+          "fromLabel": "SUB-CAB 14-4",
+          "toLabel": "TB-01",
+          "trenchType": "",
+          "crossingType": "",
+          "ductOccupancy": "",
+          "startSlackM": 0,
+          "endSlackM": 0,
+          "spliceCount": 0,
+          "status": "new",
+          "notes": ""
+        }
+      },
+      {
+        "id": "r2",
+        "catalogCode": "DUCT-4W-7/3.5",
+        "points": [
+          {
+            "x": 230,
+            "y": 250
+          },
+          {
+            "x": 230,
+            "y": 274
+          },
+          {
+            "x": 230,
+            "y": 454
+          },
+          {
+            "x": 230,
+            "y": 430
+          }
+        ],
+        "label": "4way / 7/3.5",
+        "labelOffset": {
+          "x": 0,
+          "y": -47
+        },
+        "manualLength": 157,
+        "sourceNodeId": "b1",
+        "targetNodeId": "b2",
+        "properties": {
+          "networkLevel": "secondary",
+          "installation": "underground",
+          "pathStyle": "orthogonal",
+          "cableCode": "FO-24C",
+          "fiberCores": 24,
+          "ways": 4,
+          "diameter": "7/3.5",
+          "connectorCount": 2,
+          "openBundle": 0,
+          "endBundle": 0,
+          "routeWastePercent": null,
+          "cableWastePercent": null,
+          "fromLabel": "TB-01",
+          "toLabel": "TB-02",
+          "trenchType": "",
+          "crossingType": "",
+          "ductOccupancy": "",
+          "startSlackM": 0,
+          "endSlackM": 0,
+          "spliceCount": 0,
+          "status": "new",
+          "notes": ""
+        }
+      },
+      {
+        "id": "r3",
+        "catalogCode": "DUCT-1W-7/3.5",
+        "points": [
+          {
+            "x": 230,
+            "y": 430
+          },
+          {
+            "x": 230,
+            "y": 406
+          },
+          {
+            "x": 230,
+            "y": 596
+          },
+          {
+            "x": 230,
+            "y": 620
+          }
+        ],
+        "label": "1way / 7/3.5",
+        "labelOffset": {
+          "x": 36,
+          "y": -25
+        },
+        "manualLength": 124,
+        "sourceNodeId": "b2",
+        "targetNodeId": "b3",
+        "properties": {
+          "networkLevel": "drop",
+          "installation": "underground",
+          "pathStyle": "orthogonal",
+          "cableCode": "FO-24C",
+          "fiberCores": 24,
+          "ways": 1,
+          "diameter": "7/3.5",
+          "connectorCount": 2,
+          "openBundle": 0,
+          "endBundle": 0,
+          "routeWastePercent": null,
+          "cableWastePercent": null,
+          "fromLabel": "TB-02",
+          "toLabel": "TB-03",
+          "trenchType": "",
+          "crossingType": "",
+          "ductOccupancy": "",
+          "startSlackM": 0,
+          "endSlackM": 0,
+          "spliceCount": 0,
+          "status": "new",
+          "notes": ""
+        }
+      },
+      {
+        "id": "r4",
+        "catalogCode": "DUCT-12W-7/3.5",
+        "points": [
+          {
+            "x": 720,
+            "y": 130
+          },
+          {
+            "x": 880,
+            "y": 154
+          },
+          {
+            "x": 880,
+            "y": 274
+          },
+          {
+            "x": 1040,
+            "y": 250
+          }
+        ],
+        "label": "12way / 7/3.5 / Branch B",
+        "labelOffset": {
+          "x": -36,
+          "y": -47
+        },
+        "manualLength": 72,
+        "sourceNodeId": "cab",
+        "targetNodeId": "b4",
+        "properties": {
+          "networkLevel": "main",
+          "installation": "underground",
+          "pathStyle": "orthogonal",
+          "cableCode": "FO-24C",
+          "fiberCores": 24,
+          "ways": 12,
+          "diameter": "7/3.5",
+          "connectorCount": 2,
+          "openBundle": 0,
+          "endBundle": 0,
+          "routeWastePercent": null,
+          "cableWastePercent": null,
+          "fromLabel": "SUB-CAB 14-4",
+          "toLabel": "TB-04",
+          "trenchType": "",
+          "crossingType": "",
+          "ductOccupancy": "",
+          "startSlackM": 0,
+          "endSlackM": 0,
+          "spliceCount": 0,
+          "status": "new",
+          "notes": ""
+        }
+      },
+      {
+        "id": "r5",
+        "catalogCode": "DUCT-4W-7/3.5",
+        "points": [
+          {
+            "x": 1040,
+            "y": 250
+          },
+          {
+            "x": 1040,
+            "y": 226
+          },
+          {
+            "x": 1040,
+            "y": 406
+          },
+          {
+            "x": 1040,
+            "y": 430
+          }
+        ],
+        "label": "4way / 7/3.5",
+        "labelOffset": {
+          "x": 0,
+          "y": -25
+        },
+        "manualLength": 89,
+        "sourceNodeId": "b4",
+        "targetNodeId": "b5",
+        "properties": {
+          "networkLevel": "secondary",
+          "installation": "underground",
+          "pathStyle": "orthogonal",
+          "cableCode": "FO-24C",
+          "fiberCores": 24,
+          "ways": 4,
+          "diameter": "7/3.5",
+          "connectorCount": 2,
+          "openBundle": 0,
+          "endBundle": 0,
+          "routeWastePercent": null,
+          "cableWastePercent": null,
+          "fromLabel": "TB-04",
+          "toLabel": "TB-05",
+          "trenchType": "",
+          "crossingType": "",
+          "ductOccupancy": "",
+          "startSlackM": 0,
+          "endSlackM": 0,
+          "spliceCount": 0,
+          "status": "new",
+          "notes": ""
+        }
+      },
+      {
+        "id": "r6",
+        "catalogCode": "DUCT-1W-7/3.5",
+        "points": [
+          {
+            "x": 1040,
+            "y": 430
+          },
+          {
+            "x": 1040,
+            "y": 454
+          },
+          {
+            "x": 1040,
+            "y": 644
+          },
+          {
+            "x": 1040,
+            "y": 620
+          }
+        ],
+        "label": "1way / 7/3.5",
+        "labelOffset": {
+          "x": 36,
+          "y": -47
+        },
+        "manualLength": 184,
+        "sourceNodeId": "b5",
+        "targetNodeId": "b6",
+        "properties": {
+          "networkLevel": "drop",
+          "installation": "underground",
+          "pathStyle": "orthogonal",
+          "cableCode": "FO-24C",
+          "fiberCores": 24,
+          "ways": 1,
+          "diameter": "7/3.5",
+          "connectorCount": 2,
+          "openBundle": 0,
+          "endBundle": 0,
+          "routeWastePercent": null,
+          "cableWastePercent": null,
+          "fromLabel": "TB-05",
+          "toLabel": "TB-06",
+          "trenchType": "",
+          "crossingType": "",
+          "ductOccupancy": "",
+          "startSlackM": 0,
+          "endSlackM": 0,
+          "spliceCount": 0,
+          "status": "new",
+          "notes": ""
+        }
+      }
+    ],
+    "annotations": [
+      {
+        "id": "north",
+        "x": 1260,
+        "y": 90,
+        "text": "N ↑",
+        "size": 22,
+        "rotation": 0,
+        "align": "start"
+      }
+    ],
+    "reference": null,
+    "manualBoq": []
+  },
+  "marks": [
+    {
+      "id": "m1",
+      "x": 615,
+      "y": 470,
+      "title": "Confirm route crossing",
+      "body": "Verify crossing before issue",
+      "status": "in_progress",
+      "priority": "high"
+    }
+  ],
+  "catalog": [
+    {
+      "code": "SUBCAB-22U",
+      "category": "node",
+      "name_ar": "كابينة فرعية 22U",
+      "name_en": "22U Sub Cabinet",
+      "symbol_key": "sub_cabinet",
+      "unit": "ea",
+      "default_properties": {
+        "color": "#ef4444"
+      }
+    },
+    {
+      "code": "TB-24C",
+      "category": "node",
+      "name_ar": "بوكس نهاية 24 كور",
+      "name_en": "24-core Termination Box",
+      "symbol_key": "termination_box",
+      "unit": "ea",
+      "default_properties": {
+        "color": "#2563eb",
+        "cores": 24
+      }
+    },
+    {
+      "code": "TB-48C",
+      "category": "node",
+      "name_ar": "بوكس نهاية 48 كور",
+      "name_en": "48-core Termination Box",
+      "symbol_key": "termination_box",
+      "unit": "ea",
+      "default_properties": {
+        "color": "#2563eb",
+        "cores": 48
+      }
+    },
+    {
+      "code": "TB-60C",
+      "category": "node",
+      "name_ar": "بوكس نهاية 60 كور",
+      "name_en": "60-core Termination Box",
+      "symbol_key": "termination_box",
+      "unit": "ea",
+      "default_properties": {
+        "color": "#2563eb",
+        "cores": 60
+      }
+    },
+    {
+      "code": "DUCT-12W-7/3.5",
+      "category": "route",
+      "name_ar": "ميكرو دكت 12 مسار 7/3.5",
+      "name_en": "12-way Microduct 7/3.5",
+      "symbol_key": "microduct",
+      "unit": "m",
+      "default_properties": {
+        "color": "#16a34a",
+        "ways": 12,
+        "diameter": "7/3.5"
+      }
+    },
+    {
+      "code": "DUCT-4W-7/3.5",
+      "category": "route",
+      "name_ar": "ميكرو دكت 4 مسار 7/3.5",
+      "name_en": "4-way Microduct 7/3.5",
+      "symbol_key": "microduct",
+      "unit": "m",
+      "default_properties": {
+        "color": "#dc2626",
+        "ways": 4,
+        "diameter": "7/3.5"
+      }
+    },
+    {
+      "code": "DUCT-1W-7/3.5",
+      "category": "route",
+      "name_ar": "ميكرو دكت 1 مسار 7/3.5",
+      "name_en": "1-way Microduct 7/3.5",
+      "symbol_key": "microduct",
+      "unit": "m",
+      "default_properties": {
+        "color": "#e11d48",
+        "ways": 1,
+        "diameter": "7/3.5"
+      }
+    },
+    {
+      "code": "FO-24C",
+      "category": "route",
+      "name_ar": "كابل فايبر 24 كور",
+      "name_en": "24-core Fiber Cable",
+      "symbol_key": "fiber_cable",
+      "unit": "m",
+      "default_properties": {
+        "color": "#0ea5e9",
+        "cores": 24
+      }
+    },
+    {
+      "code": "ODF-144",
+      "category": "accessory",
+      "name_ar": "ODF سعة 144",
+      "name_en": "ODF 144",
+      "symbol_key": "odf",
+      "unit": "ea",
+      "default_properties": {
+        "color": "#22c55e"
+      }
+    },
+    {
+      "code": "SP-1X4",
+      "category": "accessory",
+      "name_ar": "سبليتر 1:4",
+      "name_en": "Splitter 1:4",
+      "symbol_key": "splitter",
+      "unit": "ea",
+      "default_properties": {
+        "color": "#7c3aed"
+      }
+    },
+    {
+      "code": "LGX-4U",
+      "category": "accessory",
+      "name_ar": "راك LGX 4U",
+      "name_en": "LGX Rack 4U",
+      "symbol_key": "lgx",
+      "unit": "ea",
+      "default_properties": {
+        "color": "#7c3aed"
+      }
+    },
+    {
+      "code": "CONNECTOR",
+      "category": "accessory",
+      "name_ar": "كونكتور ميكرو دكت",
+      "name_en": "Microduct Connector",
+      "symbol_key": "connector",
+      "unit": "ea",
+      "default_properties": {
+        "color": "#f97316"
+      }
+    },
+    {
+      "code": "CIVIL-UG-ROUTE",
+      "category": "civil",
+      "name_ar": "أعمال تنفيذ مسار أرضي",
+      "name_en": "Underground route installation works",
+      "symbol_key": "civil",
+      "unit": "m",
+      "default_properties": {
+        "color": "#6b7280"
+      }
+    }
+  ]
+}

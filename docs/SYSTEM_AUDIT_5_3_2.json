@@ -1,0 +1,125 @@
+{
+  "release": "5.3.2",
+  "audit_name": "Session Isolation & System Audit",
+  "audited_at": "2026-08-06T15:26:00+03:00",
+  "scope": [
+    "client_app",
+    "platform_console",
+    "authentication",
+    "session_isolation",
+    "company_provisioning",
+    "member_provisioning",
+    "roles_permissions",
+    "company_settings_branding",
+    "files_tasks_engineering",
+    "storage",
+    "audit_logs",
+    "migrations",
+    "edge_functions",
+    "live_supabase_contract"
+  ],
+  "fixed": [
+    {
+      "severity": "critical",
+      "id": "SESSION-GLOBAL-LOGOUT",
+      "summary": "Sign-out could revoke the other application's session.",
+      "resolution": "Scoped client/platform storage keys, local sign-out, and active-session verification."
+    },
+    {
+      "severity": "high",
+      "id": "MIGRATION-RUNTIME-GAP",
+      "summary": "Eleven active RPCs existed live but were missing from the package migration chain.",
+      "resolution": "Added and applied phase5_3_2_runtime_contract_recovery."
+    },
+    {
+      "severity": "high",
+      "id": "REVISION-RESTORE-LIVE-GAP",
+      "summary": "create_engineering_revision_from was missing from the live database.",
+      "resolution": "Applied phase4_14_revision_restore_live_recovery."
+    },
+    {
+      "severity": "medium",
+      "id": "REFRESH-ERROR-SWALLOW",
+      "summary": "Post-operation refresh errors could be hidden.",
+      "resolution": "Refresh failures are surfaced separately from successful writes."
+    }
+  ],
+  "static_contract": {
+    "actions": 178,
+    "forms": 44,
+    "rpcs": 62,
+    "unhandled_actions": 0,
+    "unhandled_forms": 0,
+    "rpcs_missing_from_package_migrations": 0,
+    "browser_service_role_secrets": 0
+  },
+  "live_rpc_contract": {
+    "expected": 62,
+    "present": 62,
+    "missing": [],
+    "not_authenticated": [],
+    "anon_exposed": []
+  },
+  "live_counts": {
+    "companies": 3,
+    "subscriptions": 3,
+    "auth_users": 3,
+    "profiles": 3,
+    "memberships": 3,
+    "roles": 19,
+    "permissions": 50,
+    "role_permissions": 631,
+    "role_templates": 6,
+    "template_permissions": 100,
+    "projects": 2,
+    "sites": 2,
+    "folders": 69,
+    "documents": 2,
+    "tasks": 2,
+    "drawings": 2,
+    "audit_events": 139,
+    "platform_audit_events": 5
+  },
+  "integrity": {
+    "companies_without_subscription": 0,
+    "companies_without_branding": 0,
+    "companies_without_active_owner": 1,
+    "memberships_role_company_mismatch": 0,
+    "active_members_missing_auth": 0,
+    "active_members_missing_profile": 0,
+    "active_members_missing_security": 0,
+    "expired_temp_passwords_still_forced": 0,
+    "expired_pending_invitations": 0,
+    "roles_with_zero_permissions": 0,
+    "templates_with_zero_permissions": 0,
+    "duplicate_active_memberships": 0
+  },
+  "known_data_cleanup": [
+    {
+      "company": "جامعة النهضة (New Bani Suef, Beni Suef Governorate)",
+      "slug": "nahda-benisuef",
+      "issue": "Legacy trial company has no members and no active owner.",
+      "automatic_mutation_performed": false
+    }
+  ],
+  "tests": {
+    "npm_test": "passed",
+    "browser_contract": "passed",
+    "portable_client_http": 200,
+    "portable_platform_http": 200,
+    "next_production_build": "not_run_successfully_next_not_installed",
+    "live_destructive_e2e_on_staging": "not_available_no_staging"
+  },
+  "pre_publish_blockers": [
+    "Create an isolated Supabase staging environment.",
+    "Prove npm ci and Next.js production build.",
+    "Add idempotent provisioning jobs/outbox and retry state.",
+    "Configure and test transactional email delivery.",
+    "Deploy the exact Edge Function source included in the package and configure allowed production origins.",
+    "Enable leaked-password protection.",
+    "Review and document the SECURITY DEFINER RPC allowlist.",
+    "Run destructive live E2E on staging.",
+    "Resolve the legacy company without an owner.",
+    "Test backup and restore."
+  ]
+}

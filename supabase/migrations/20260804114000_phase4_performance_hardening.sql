@@ -1,0 +1,17 @@
+begin;
+create index if not exists engineering_assets_company_idx on public.engineering_assets(company_id);
+create index if not exists engineering_assets_uploaded_by_idx on public.engineering_assets(uploaded_by);
+create index if not exists engineering_catalog_created_by_idx on public.engineering_catalog_items(created_by) where created_by is not null;
+create index if not exists engineering_drawings_project_idx on public.engineering_drawings(project_id);
+create index if not exists engineering_drawings_folder_idx on public.engineering_drawings(folder_id) where folder_id is not null;
+create index if not exists engineering_drawings_source_document_idx on public.engineering_drawings(source_document_id) where source_document_id is not null;
+create index if not exists engineering_drawings_current_revision_idx on public.engineering_drawings(current_revision_id) where current_revision_id is not null;
+create index if not exists engineering_drawings_created_by_idx on public.engineering_drawings(created_by);
+create index if not exists engineering_drawings_updated_by_idx on public.engineering_drawings(updated_by) where updated_by is not null;
+create index if not exists engineering_marks_drawing_idx on public.engineering_review_marks(drawing_id);
+create index if not exists engineering_marks_created_by_idx on public.engineering_review_marks(created_by);
+create index if not exists engineering_marks_resolved_by_idx on public.engineering_review_marks(resolved_by) where resolved_by is not null;
+create index if not exists engineering_revisions_created_by_idx on public.engineering_revisions(created_by);
+drop policy if exists engineering_catalog_insert on public.engineering_catalog_items;
+create policy engineering_catalog_insert on public.engineering_catalog_items for insert to authenticated with check(company_id is not null and created_by=(select auth.uid()) and app_private.has_company_permission(company_id,'catalog.manage'));
+commit;

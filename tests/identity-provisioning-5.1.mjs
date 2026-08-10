@@ -1,0 +1,65 @@
+import assert from 'node:assert/strict';
+import { readFileSync, existsSync } from 'node:fs';
+
+const read=(path)=>readFileSync(new URL(path,import.meta.url),'utf8');
+const app=read('../assets/app.js');
+const api=read('../assets/api.js');
+const platform=read('../assets/platform.js');
+const css=read('../assets/styles.css');
+const server=read('../server.mjs');
+const edge=read('../supabase/functions/identity-provisioning/index.ts');
+const migration=read('../supabase/migrations/20260805204939_phase5_1_identity_provisioning.sql');
+const hardening=read('../supabase/migrations/20260806042000_phase5_1_first_login_service_hardening.sql');
+
+assert.doesNotMatch(app,/data-form="signup"/,'public signup form must not exist');
+assert.doesNotMatch(api,/async signUp\(/,'browser API must not expose public signup');
+assert.match(app,/Public registration is disabled/);
+assert.match(app,/forgot-password/);
+assert.match(api,/resetPasswordForEmail/);
+assert.match(api,/session\.recovery = callbackType === 'recovery'/);
+assert.match(app,/data-form="first-login"/);
+assert.match(app,/action:'complete_first_login'/);
+assert.doesNotMatch(app,/api\.updatePassword\(data\.password\)/,'first-login password changes must be performed by the trusted Edge Function');
+assert.match(app,/action:'(?:provision_member|create_member)'/);
+assert.match(app,/employee_code/);
+assert.match(app,/permission_overrides/);
+assert.match(app,/temporary_password/);
+assert.doesNotMatch(app,/data-nav="platform"/,'platform administration must not be embedded in the client application');
+
+assert.ok(existsSync(new URL('../platform.html',import.meta.url)));
+assert.ok(existsSync(new URL('../app/platform/page.js',import.meta.url)));
+assert.ok(existsSync(new URL('../platform-console/index.html',import.meta.url)));
+assert.ok(existsSync(new URL('../platform-console/server.mjs',import.meta.url)));
+assert.ok(existsSync(new URL('../start-platform-console.bat',import.meta.url)));
+assert.ok(existsSync(new URL('../start-client-app.bat',import.meta.url)));
+assert.match(platform,/PLATFORM CONSOLE/);
+assert.match(platform,/action:'(?:provision_company|create_company)'/);
+assert.match(platform,/platform_company_directory/);
+assert.match(platform,/platform_member_directory/);
+assert.match(platform,/action:'update_company'/);
+assert.match(platform,/action:'reset_temporary_password'/);
+assert.match(platform,/data-form="create-company"/);
+assert.match(platform,/data-wizard-review/);
+assert.match(platform,/mobileNav/);
+assert.match(platform,/clientAppUrl/);
+assert.match(platform,/registration_number/);
+assert.match(platform,/billing_contact_name/);
+assert.match(server,/url\.pathname === '\/platform'/);
+assert.match(css,/Phase 5\.1/);
+assert.match(css,/\.platform-shell/);
+assert.match(css,/\.security-setup-shell/);
+
+assert.match(edge,/SUPABASE_SERVICE_ROLE_KEY/);
+assert.match(edge,/service_complete_first_login_for_user/);
+assert.match(edge,/auth\.admin\.createUser/);
+assert.match(edge,/must_change_password/);
+assert.match(edge,/randomPassword/);
+assert.doesNotMatch(api,/service_role/i,'service role must never be present in browser code');
+assert.doesNotMatch(app,/service_role/i,'service role must never be present in client app');
+assert.doesNotMatch(platform,/service_role/i,'service role must never be present in platform browser app');
+assert.match(migration,/create table if not exists public\.account_security/);
+assert.match(migration,/service_accept_invitation_for_user/);
+assert.match(hardening,/revoke all on function public\.complete_first_login/);
+assert.match(hardening,/to service_role/);
+
+console.log('✓ Phase 5.1 identity provisioning: private login, forced first login, member provisioning and separate platform console passed');

@@ -1,0 +1,16 @@
+create index if not exists tasks_owner_user_fk_idx on public.tasks(owner_user_id) where owner_user_id is not null;
+create index if not exists tasks_reviewer_user_fk_idx on public.tasks(reviewer_user_id) where reviewer_user_id is not null;
+create index if not exists tasks_approver_user_fk_idx on public.tasks(approver_user_id) where approver_user_id is not null;
+create index if not exists task_dependencies_company_fk_idx on public.task_dependencies(company_id);
+create index if not exists task_dependencies_created_by_fk_idx on public.task_dependencies(created_by);
+create index if not exists task_watchers_user_fk_idx on public.task_watchers(user_id);
+create index if not exists task_watchers_created_by_fk_idx on public.task_watchers(created_by);
+create index if not exists member_leave_created_by_fk_idx on public.member_leave_periods(created_by);
+create index if not exists member_leave_updated_by_fk_idx on public.member_leave_periods(updated_by) where updated_by is not null;
+create index if not exists task_templates_created_by_fk_idx on public.task_templates(created_by);
+create index if not exists task_templates_updated_by_fk_idx on public.task_templates(updated_by) where updated_by is not null;
+create index if not exists work_automation_rules_created_by_fk_idx on public.work_automation_rules(created_by);
+create index if not exists work_automation_rules_updated_by_fk_idx on public.work_automation_rules(updated_by) where updated_by is not null;
+create index if not exists work_milestones_owner_user_fk_idx on public.work_milestones(owner_user_id) where owner_user_id is not null;
+create index if not exists work_milestones_created_by_fk_idx on public.work_milestones(created_by);
+create index if not exists work_milestones_updated_by_fk_idx on public.work_milestones(updated_by) where updated_by is not null;

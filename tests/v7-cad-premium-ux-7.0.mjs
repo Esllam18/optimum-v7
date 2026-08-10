@@ -1,0 +1,3 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';
+const cad=fs.readFileSync(new URL('../src/v7/components/CadWorkspace.js',import.meta.url),'utf8');const css=fs.readFileSync(new URL('../src/v7/v7.css',import.meta.url),'utf8');
+assert.match(cad,/paletteOpen/);assert.match(cad,/inspectorOpen/);assert.match(cad,/fitCanvas/);assert.match(cad,/stageScrollRef/);assert.match(cad,/Ctrl\+S · F Fit · Del · Esc/);assert.match(cad,/idle|2400/);assert.match(cad,/TakeoffDrawer/);assert.match(cad,/exportEngineeringDxfCompatible/);assert.match(css,/v7-cad-shortcuts/);console.log('V7 CAD premium UX 7.0 contract: PASS');

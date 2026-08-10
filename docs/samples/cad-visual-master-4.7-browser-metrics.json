@@ -1,0 +1,77 @@
+{
+  "metrics": {
+    "w": 1648,
+    "h": 927,
+    "body": {
+      "x": 0,
+      "y": 0,
+      "width": 1648,
+      "height": 927,
+      "top": 0,
+      "right": 1648,
+      "bottom": 927,
+      "left": 0
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1648,
+      "height": 122,
+      "top": 0,
+      "right": 1648,
+      "bottom": 122,
+      "left": 0
+    },
+    "left": {
+      "x": 0,
+      "y": 122,
+      "width": 270,
+      "height": 638,
+      "top": 122,
+      "right": 270,
+      "bottom": 760,
+      "left": 0
+    },
+    "canvas": {
+      "x": 270,
+      "y": 122,
+      "width": 1078,
+      "height": 638,
+      "top": 122,
+      "right": 1348,
+      "bottom": 760,
+      "left": 270
+    },
+    "right": {
+      "x": 1348,
+      "y": 122,
+      "width": 300,
+      "height": 638,
+      "top": 122,
+      "right": 1648,
+      "bottom": 760,
+      "left": 1348
+    },
+    "dock": {
+      "x": 0,
+      "y": 795,
+      "width": 1648,
+      "height": 132,
+      "top": 795,
+      "right": 1648,
+      "bottom": 927,
+      "left": 0
+    },
+    "minimap": {
+      "x": 1357,
+      "y": 578.5,
+      "width": 283,
+      "height": 173.5,
+      "top": 578.5,
+      "right": 1640,
+      "bottom": 752,
+      "left": 1357
+    }
+  },
+  "errors": []
+}

@@ -1,0 +1,19 @@
+{
+  "version": "4.16.0",
+  "r12": {
+    "acadVersion": "AC1009",
+    "ascii": true,
+    "eof": true,
+    "bytes": 22456
+  },
+  "r2000": {
+    "acadVersion": "AC1015",
+    "eof": true,
+    "bytes": 31756
+  },
+  "features": {
+    "classicRouteDock": true,
+    "elementTypeCaption": true,
+    "independentRouteLabelEditor": true
+  }
+}

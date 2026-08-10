@@ -1,0 +1,37 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+
+const read=(p)=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
+const api=read('assets/api.js');
+const config=read('assets/config.js');
+const app=read('assets/app.js');
+const platform=read('assets/platform.js');
+const index=read('index.html');
+const platformHtml=read('platform.html');
+const consoleHtml=read('platform-console/index.html');
+const edge=read('supabase/functions/identity-provisioning/index.ts');
+
+assert.match(config,/6\.9\.0-site-delivery-claim-intelligence/);
+assert.match(config,/sessionStorageKey:\s*'optimum\.session\.v2'/);
+assert.match(api,/this\.scope = this\.detectAppScope\(\)/);
+assert.match(api,/this\.sessionKey = `\$\{CONFIG\.sessionStorageKey\}\.\$\{this\.scope\}`/);
+assert.match(api,/dataset\?\.appScope|appScope/);
+assert.match(api,/\/logout\?scope=\$\{encodeURIComponent\(scope\)\}/);
+assert.match(api,/async ensureActiveSession\(\)/);
+assert.match(api,/async invokeFunction[\s\S]*await this\.ensureActiveSession\(\)/);
+assert.match(index,/data-app="client"/);
+assert.match(platformHtml,/data-app="platform"/);
+assert.match(consoleHtml,/data-app="platform"/);
+assert.doesNotMatch(app,/identity-provisioning-verified/);
+assert.doesNotMatch(platform,/identity-provisioning-verified/);
+assert.match(app,/invokeFunction\('identity-provisioning-v55'/);
+assert.match(platform,/invokeFunction\('identity-provisioning-v55'/);
+assert.match(edge,/signOut\(\{ scope: "local" \}\)/);
+assert.match(edge,/OPTIMUM_ALLOWED_ORIGINS/);
+assert.doesNotMatch(edge,/Access-Control-Allow-Origin\": \"\*/);
+assert.match(edge,/service_find_auth_user_by_email/);
+assert.match(platform,/جلسة تطبيق الشركة منفصلة/);
+assert.match(app,/جلسة لوحة الإدارة منفصلة/);
+assert.ok(!fs.existsSync(new URL('../supabase/functions/identity-provisioning-verified',import.meta.url)),'Deprecated verified wrapper must not ship in the package.');
+for(const doc of ['docs/SYSTEM_AUDIT_5_3_2_AR.md','docs/SYSTEM_AUDIT_5_3_2.json','docs/RELEASE_NOTES_5_3_2_AR.md','docs/QA_CHECKLIST_PHASE_5_3_2.md']) assert.ok(fs.existsSync(new URL(`../${doc}`,import.meta.url)),`${doc} is required.`);
+console.log('Phase 5.3.2 session isolation contract passed.');

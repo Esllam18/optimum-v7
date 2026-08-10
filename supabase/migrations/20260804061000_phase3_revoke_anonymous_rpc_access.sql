@@ -1,0 +1,25 @@
+revoke execute on function public.create_task(uuid,text,text,public.task_priority,uuid,uuid,uuid,uuid,timestamptz,timestamptz,public.task_visibility,boolean,uuid[],uuid[],jsonb,public.task_recurrence_frequency,integer,timestamptz) from anon, public;
+revoke execute on function public.update_task(uuid,text,text,public.task_priority,uuid,uuid,uuid,uuid,timestamptz,timestamptz,public.task_visibility,boolean,uuid[],uuid[]) from anon, public;
+revoke execute on function public.set_task_status(uuid,public.task_status,text,text,integer) from anon, public;
+revoke execute on function public.claim_task(uuid) from anon, public;
+revoke execute on function public.add_task_comment(uuid,text) from anon, public;
+revoke execute on function public.toggle_task_checklist_item(uuid,boolean) from anon, public;
+revoke execute on function public.add_task_checklist_item(uuid,text) from anon, public;
+revoke execute on function public.begin_task_attachment_upload(uuid,text,text,bigint,uuid) from anon, public;
+revoke execute on function public.finalize_task_attachment_upload(uuid) from anon, public;
+revoke execute on function public.abort_task_attachment_upload(uuid) from anon, public;
+revoke execute on function public.materialize_recurring_tasks(uuid,timestamptz) from anon, public;
+revoke execute on function public.work_dashboard_metrics(uuid) from anon, public;
+
+grant execute on function public.create_task(uuid,text,text,public.task_priority,uuid,uuid,uuid,uuid,timestamptz,timestamptz,public.task_visibility,boolean,uuid[],uuid[],jsonb,public.task_recurrence_frequency,integer,timestamptz) to authenticated;
+grant execute on function public.update_task(uuid,text,text,public.task_priority,uuid,uuid,uuid,uuid,timestamptz,timestamptz,public.task_visibility,boolean,uuid[],uuid[]) to authenticated;
+grant execute on function public.set_task_status(uuid,public.task_status,text,text,integer) to authenticated;
+grant execute on function public.claim_task(uuid) to authenticated;
+grant execute on function public.add_task_comment(uuid,text) to authenticated;
+grant execute on function public.toggle_task_checklist_item(uuid,boolean) to authenticated;
+grant execute on function public.add_task_checklist_item(uuid,text) to authenticated;
+grant execute on function public.begin_task_attachment_upload(uuid,text,text,bigint,uuid) to authenticated;
+grant execute on function public.finalize_task_attachment_upload(uuid) to authenticated;
+grant execute on function public.abort_task_attachment_upload(uuid) to authenticated;
+grant execute on function public.materialize_recurring_tasks(uuid,timestamptz) to authenticated;
+grant execute on function public.work_dashboard_metrics(uuid) to authenticated;

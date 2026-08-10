@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.github
+*.log
+.env
+.env.*
+!.env.example
+optimum-v7-checkpoint-*.zip
+optimum-v7-checkpoint-*.sha256
+docs/qa

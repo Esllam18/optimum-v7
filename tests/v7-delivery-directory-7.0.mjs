@@ -1,0 +1,4 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';
+const sql=fs.readFileSync(new URL('../supabase/migrations/20260809232304_v7_delivery_directory.sql',import.meta.url),'utf8');
+const page=fs.readFileSync(new URL('../src/v7/pages/DeliveryPage.js',import.meta.url),'utf8');
+assert.match(sql,/delivery_directory_query/);assert.match(sql,/user_permission_is_unscoped/);assert.match(sql,/user_has_resource_permission/);assert.match(sql,/least\(coalesce\(p_limit,50\),100\)/i);assert.match(sql,/cabinets/);assert.match(sql,/status='collecting'/);assert.match(page,/delivery_directory_query/);assert.doesNotMatch(page,/api\.select\('site_claim_packages'/);assert.doesNotMatch(page,/api\.select\('site_cabinets'/);assert.match(page,/v7-pagination/);console.log('V7 Delivery directory 7.0 contract: PASS');

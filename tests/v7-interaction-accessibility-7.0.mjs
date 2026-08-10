@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const primitives=fs.readFileSync(new URL('../src/v7/components/Primitives.js',import.meta.url),'utf8');
+const shell=fs.readFileSync(new URL('../src/v7/components/Shell.js',import.meta.url),'utf8');
+const app=fs.readFileSync(new URL('../src/v7/V7App.js',import.meta.url),'utf8');
+const css=fs.readFileSync(new URL('../src/v7/v7.css',import.meta.url),'utf8');
+assert.match(primitives,/type = 'button'/);
+assert.match(primitives,/<button type=\{type\}/);
+assert.match(shell,/aria-label=\{locale === 'ar' \? 'تغيير اللغة'/);
+assert.match(shell,/aria-label=\{locale === 'ar' \? 'تغيير المظهر'/);
+assert.match(shell,/aria-label=\{locale === 'ar' \? 'الإشعارات'/);
+assert.match(app,/v7-login-actions[^\n]*aria-label=/);
+assert.match(css,/\.v7-company-switcher:focus-within \.v7-company-card/);
+console.log('V7 interaction accessibility 7.0 contract: PASS');
