@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  ...(process.env.VERCEL === '1' ? {} : { output: 'standalone' }),
   reactStrictMode: true,
   poweredByHeader: false,
   turbopack: { root: process.cwd() },
