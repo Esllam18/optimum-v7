@@ -61,7 +61,7 @@ const walk = dir => {
 walk(srcRoot);
 const inert = [];
 for (const abs of files) {
-  const rel = path.relative(root, abs);
+  const rel = path.relative(root, abs).split(path.sep).join('/');
   const source = fs.readFileSync(abs, 'utf8');
   for (const tag of ['Button', 'button']) {
     const rx = new RegExp(`<${tag}\\b([^>]*)>`, 'gs');

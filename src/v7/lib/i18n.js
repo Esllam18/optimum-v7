@@ -1,6 +1,6 @@
 export const copy = {
   ar: {
-    overview: 'الرئيسية', work: 'العمل', projects: 'المشاريع', documents: 'المستندات', engineering: 'الهندسة', people: 'الفريق', control: 'الإدارة', delivery: 'التسليم',
+    overview: 'الرئيسية', work: 'العمل', calendar: 'التقويم', projects: 'المشاريع', documents: 'المستندات', trash: 'سلة المحذوفات', engineering: 'الهندسة', people: 'الفريق', organization: 'نظام المؤسسة', roles: 'الأدوار والصلاحيات', activity: 'سجل النشاط', settings: 'الإعدادات', control: 'الإدارة', delivery: 'التسليم',
     search: 'ابحث في Optimum…', commandHint: 'مشروع، موقع، مستند أو مهمة', quickCreate: 'إنشاء', signedInAs: 'مسجل باسم', signOut: 'تسجيل الخروج',
     workspace: 'مساحة العمل', loading: 'جارٍ التحميل…', retry: 'إعادة المحاولة', noData: 'لا توجد بيانات لعرضها',
     welcome: 'صباح التنفيذ', welcomeSub: 'الصورة التي تحتاجها الآن، بدون تشتيت.', attention: 'يحتاج انتباهك', activeProjects: 'المشاريع النشطة', openWork: 'العمل المفتوح', storage: 'استخدام التخزين', members: 'أعضاء الفريق',
@@ -21,7 +21,7 @@ export const copy = {
     refresh: 'تحديث', exactContext: 'السياق'
   },
   en: {
-    overview: 'Overview', work: 'Work', projects: 'Projects', documents: 'Documents', engineering: 'Engineering', people: 'People', control: 'Control', delivery: 'Delivery',
+    overview: 'Overview', work: 'Work', calendar: 'Calendar', projects: 'Projects', documents: 'Documents', trash: 'Trash', engineering: 'Engineering', people: 'People', organization: 'Organization', roles: 'Roles & permissions', activity: 'Activity', settings: 'Settings', control: 'Control', delivery: 'Delivery',
     search: 'Search Optimum…', commandHint: 'Project, site, document or task', quickCreate: 'Create', signedInAs: 'Signed in as', signOut: 'Sign out',
     workspace: 'Workspace', loading: 'Loading…', retry: 'Retry', noData: 'Nothing to show yet',
     welcome: 'Execution at a glance', welcomeSub: 'What needs your attention now, without the noise.', attention: 'Needs attention', activeProjects: 'Active projects', openWork: 'Open work', storage: 'Storage usage', members: 'Team members',

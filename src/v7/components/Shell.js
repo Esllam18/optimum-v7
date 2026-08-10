@@ -14,15 +14,21 @@ const navGroups = [
   { key: 'workspace', items: [
     { key: 'overview', href: '/v7', icon: 'grid' },
     { key: 'work', href: '/v7/work', icon: 'check', permission: 'tasks.view' },
+    { key: 'calendar', href: '/v7/calendar', icon: 'clock', permission: 'tasks.view' },
     { key: 'projects', href: '/v7/projects', icon: 'briefcase', permission: 'projects.view' }
   ] },
   { key: 'delivery', items: [
     { key: 'documents', href: '/v7/documents', icon: 'folder', permission: 'files.view' },
+    { key: 'trash', href: '/v7/trash', icon: 'trash', permission: 'files.view' },
     { key: 'engineering', href: '/v7/engineering', icon: 'drafting', permission: 'drawings.view' },
     { key: 'delivery', href: '/v7/delivery', icon: 'delivery', permission: 'projects.view' }
   ] },
   { key: 'control', items: [
     { key: 'people', href: '/v7/people', icon: 'users', permission: 'members.view' },
+    { key: 'organization', href: '/v7/organization', icon: 'layers', permission: 'company.manage' },
+    { key: 'roles', href: '/v7/roles', icon: 'shield', permission: 'roles.view' },
+    { key: 'activity', href: '/v7/activity', icon: 'activity', permission: 'audit.view' },
+    { key: 'settings', href: '/v7/settings', icon: 'settings', permission: 'company.view' },
     { key: 'control', href: '/v7/control', icon: 'shield', permission: 'roles.view' }
   ] }
 ];
@@ -54,7 +60,7 @@ export default function Shell({ workspace, locale, setLocale, theme, setTheme, o
     <aside className={`v7-sidebar ${mobileOpen ? 'is-open' : ''}`}>
       <div className="v7-brand-row">
         <BrandAvatar path={workspace.branding?.logo_path} name={workspace.branding?.app_name || workspace.company?.name || 'Optimum'} size={36} />
-        <div><strong>{workspace.branding?.app_name || 'Optimum'}</strong><span>Delivery OS</span></div>
+        <div><strong>{workspace.branding?.app_name || 'Optimum'}</strong><span>{locale === 'ar' ? 'نظام التسليم' : 'Delivery OS'}</span></div>
       </div>
 
       <div className="v7-company-switcher">

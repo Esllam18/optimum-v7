@@ -28,6 +28,13 @@ const EngineeringPage = lazyPage(() => import('./pages/EngineeringPage'));
 const PeoplePage = lazyPage(() => import('./pages/PeoplePage'));
 const DeliveryPage = lazyPage(() => import('./pages/DeliveryPage'));
 const ControlPage = lazyPage(() => import('./pages/ControlPage'));
+const CalendarPage = lazyPage(() => import('./pages/CalendarPage'));
+const OrganizationPage = lazyPage(() => import('./pages/OrganizationPage'));
+const RolesPage = lazyPage(() => import('./pages/RolesPage'));
+const ActivityPage = lazyPage(() => import('./pages/ActivityPage'));
+const SettingsPage = lazyPage(() => import('./pages/SettingsPage'));
+const TrashPage = lazyPage(() => import('./pages/TrashPage'));
+const WorkIntelligencePage = lazyPage(() => import('./pages/WorkIntelligencePage'));
 
 function Login({ locale, setLocale, theme, setTheme, onSignedIn }) {
   const [email, setEmail] = useState('');
@@ -41,8 +48,8 @@ function Login({ locale, setLocale, theme, setTheme, onSignedIn }) {
     finally { setLoading(false); }
   };
   return <div className="v7-login" dir={locale === 'ar' ? 'rtl' : 'ltr'} data-theme={theme}>
-    <section className="v7-login-story"><div className="v7-login-brand"><span>O</span><strong>Optimum</strong></div><div><span className="v7-eyebrow">DELIVERY OPERATING SYSTEM</span><h1>Project delivery,<br/>without the operational noise.</h1><p>{tx(locale, 'loginSub')}</p></div><div className="v7-login-points"><span><Icon name="folder" /> CDE & versions</span><span><Icon name="check" /> Work & approvals</span><span><Icon name="drafting" /> CAD & takeoff</span><span><Icon name="delivery" /> Site delivery</span></div></section>
-    <section className="v7-login-form-wrap"><div className="v7-login-actions"><button type="button" aria-label={locale === 'ar' ? 'تغيير اللغة' : 'Change language'} onClick={() => setLocale(locale === 'ar' ? 'en' : 'ar')}><Icon name="globe" /></button><button type="button" aria-label={locale === 'ar' ? 'تغيير المظهر' : 'Change theme'} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}><Icon name="sun" /></button></div><form className="v7-login-card" onSubmit={submit}><span className="v7-eyebrow">PRIVATE WORKSPACE</span><h2>{tx(locale, 'loginTitle')}</h2><p>{tx(locale, 'loginSub')}</p><label><span>{tx(locale, 'email')}</span><input type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" required /></label><label><span>{tx(locale, 'password')}</span><input type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" required /></label>{error ? <div className="v7-form-error">{error}</div> : null}<Button type="submit" variant="primary" className="v7-login-submit" disabled={loading}>{loading ? tx(locale, 'loading') : tx(locale, 'signIn')}</Button></form></section>
+    <section className="v7-login-story"><div className="v7-login-brand"><span>O</span><strong>Optimum</strong></div><div><span className="v7-eyebrow">{locale === 'ar' ? 'نظام تشغيل التسليم' : 'DELIVERY OPERATING SYSTEM'}</span><h1>{locale === 'ar' ? <>تسليم المشاريع،<br/>بدون ضوضاء التشغيل.</> : <>Project delivery,<br/>without the operational noise.</>}</h1><p>{tx(locale, 'loginSub')}</p></div><div className="v7-login-points"><span><Icon name="folder" /> {locale === 'ar' ? 'المستندات والإصدارات' : 'CDE & versions'}</span><span><Icon name="check" /> {locale === 'ar' ? 'العمل والاعتمادات' : 'Work & approvals'}</span><span><Icon name="drafting" /> {locale === 'ar' ? 'CAD والحصر' : 'CAD & takeoff'}</span><span><Icon name="delivery" /> {locale === 'ar' ? 'تسليم المواقع' : 'Site delivery'}</span></div></section>
+    <section className="v7-login-form-wrap"><div className="v7-login-actions"><button type="button" aria-label={locale === 'ar' ? 'تغيير اللغة' : 'Change language'} onClick={() => setLocale(locale === 'ar' ? 'en' : 'ar')}><Icon name="globe" /></button><button type="button" aria-label={locale === 'ar' ? 'تغيير المظهر' : 'Change theme'} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}><Icon name="sun" /></button></div><form className="v7-login-card" onSubmit={submit}><span className="v7-eyebrow">{locale === 'ar' ? 'مساحة عمل خاصة' : 'PRIVATE WORKSPACE'}</span><h2>{tx(locale, 'loginTitle')}</h2><p>{tx(locale, 'loginSub')}</p><label><span>{tx(locale, 'email')}</span><input type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" required /></label><label><span>{tx(locale, 'password')}</span><input type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" required /></label>{error ? <div className="v7-form-error">{error}</div> : null}<Button type="submit" variant="primary" className="v7-login-submit" disabled={loading}>{loading ? tx(locale, 'loading') : tx(locale, 'signIn')}</Button></form></section>
   </div>;
 }
 
@@ -114,6 +121,13 @@ export default function V7App() {
     : route.key === 'people' ? <PeoplePage workspace={workspace} locale={locale} />
     : route.key === 'delivery' ? <DeliveryPage workspace={workspace} locale={locale} />
     : route.key === 'control' ? <ControlPage workspace={workspace} locale={locale} />
+    : route.key === 'calendar' ? <CalendarPage workspace={workspace} locale={locale} />
+    : route.key === 'organization' ? <OrganizationPage workspace={workspace} locale={locale} />
+    : route.key === 'roles' ? <RolesPage workspace={workspace} locale={locale} />
+    : route.key === 'activity' ? <ActivityPage workspace={workspace} locale={locale} />
+    : route.key === 'settings' ? <SettingsPage workspace={workspace} locale={locale} />
+    : route.key === 'trash' ? <TrashPage workspace={workspace} locale={locale} />
+    : route.key === 'work-intelligence' ? <WorkIntelligencePage workspace={workspace} locale={locale} />
     : <ErrorState title={tx(locale, 'routeNotReady')} description={tx(locale, 'routeNotReadySub')} />;
 
   return <V7ErrorBoundary locale={locale}>

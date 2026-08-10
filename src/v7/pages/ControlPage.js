@@ -7,7 +7,7 @@ import { tx } from '../lib/i18n';
 import Icon from '../components/Icon';
 import { Badge, EmptyState, PageHeader, Panel, Skeleton, Stat } from '../components/Primitives';
 
-const routeFor = (route) => route === 'team' ? '/v7/people' : route === 'projects' ? '/v7/projects' : '/v7/control';
+const routeFor = (route) => ({ team:'/v7/people', projects:'/v7/projects', roles:'/v7/roles', organization:'/v7/organization', settings:'/v7/settings', activity:'/v7/activity' })[route] || '/v7/control';
 
 export default function ControlPage({ workspace, locale }) {
   const [data, setData] = useState(null);

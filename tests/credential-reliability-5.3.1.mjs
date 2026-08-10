@@ -1,8 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
+import { fileURLToPath } from 'node:url';
 
-const here=path.dirname(new URL(import.meta.url).pathname);
+const here=path.dirname(fileURLToPath(import.meta.url));
 const read=(p)=>fs.readFileSync(path.join(here,p),'utf8');
 const edge=read('../supabase/functions/identity-provisioning/index.ts');
 const platform=read('../assets/platform.js');
