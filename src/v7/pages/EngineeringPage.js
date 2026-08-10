@@ -95,7 +95,7 @@ export default function EngineeringPage({ workspace, locale }) {
   if (error) return <ErrorState title={tx(locale, 'networkIssue')} description={error.message} />;
 
   return <>
-    <PageHeader eyebrow="ENGINEERING INTELLIGENCE" title={tx(locale, 'engineeringHub')} description={tx(locale, 'engineeringHubSub')} actions={}>
+    <PageHeader eyebrow="ENGINEERING INTELLIGENCE" title={tx(locale, 'engineeringHub')} description={tx(locale, 'engineeringHubSub')}>
       {projectId ? <div className="v7-context-chips"><span>{siteId ? (locale === 'ar' ? 'رسومات الموقع' : 'Site drawings') : (locale === 'ar' ? 'رسومات المشروع' : 'Project drawings')}</span><button onClick={() => router.push(projectAreaHref('project', context))}>{locale === 'ar' ? 'الرجوع للسياق' : 'Back to context'}</button><button onClick={() => router.push('/v7/engineering')}>{locale === 'ar' ? 'كل الرسومات' : 'All drawings'}</button></div> : null}
     </PageHeader>
     <div className="v7-engineering-hero"><div><span className="v7-eyebrow">V7 CAD WORKSPACE · NATIVE CORE</span><h2>Draw → understand → take off → review → issue</h2><p>{locale === 'ar' ? 'واجهة هندسية مستقلة في V7، مع محرك الرسم والحصر وDXF مفصول في وحدة Core قابلة للاختبار ومستقلة عن الواجهة القديمة.' : 'A native V7 engineering workspace with the drawing, takeoff and DXF engine extracted into a testable core module independent from the previous UI runtime.'}</p><div className="v7-inline-actions"><Badge tone="success">Core parity preserved</Badge><Badge tone="brand">Native V7 workspace</Badge></div></div><div className="v7-engineering-graphic"><span><Icon name="drafting" size={36} /></span><i /><span><Icon name="layers" size={32} /></span><i /><span><Icon name="check" size={32} /></span></div></div>
