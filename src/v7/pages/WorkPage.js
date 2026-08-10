@@ -10,6 +10,7 @@ import { tx } from '../lib/i18n';
 import Icon from '../components/Icon';
 import SideSheet from '../components/SideSheet';
 import WorkTaskActions from '../components/WorkTaskActions';
+import WorkItemEditor from '../components/WorkItemEditor';
 import { Badge, Button, EmptyState, ErrorState, PageHeader, Panel, Skeleton, Stat } from '../components/Primitives';
 
 const PAGE_SIZE = 25;
@@ -26,6 +27,7 @@ function TaskDetail({ taskId, locale, onClose, router, onChanged }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [reload, setReload] = useState(0);
+  const [editorOpen, setEditorOpen] = useState(false);
   useEffect(() => {
     if (!taskId) { setData(null); setError(null); return; }
     const c = new AbortController();
@@ -50,6 +52,7 @@ function TaskDetail({ taskId, locale, onClose, router, onChanged }) {
         {task.description ? <p>{task.description}</p> : null}
         <div className="v7-capability-row">{Object.entries(capabilities).filter(([, allowed]) => allowed).map(([key]) => <Badge key={key} tone="success">{key}</Badge>)}</div>
         <div className="v7-inline-actions">
+          {capabilities.edit ? <Button variant="primary" icon="edit" onClick={() => setEditorOpen(true)}>{locale === 'ar' ? 'تحرير كامل' : 'Full editor'}</Button> : null}
           {task.document_id ? <Button icon="file" onClick={() => router.push(projectAreaHref('documents', context, { document: task.document_id }))}>{locale === 'ar' ? 'فتح المستند' : 'Open document'}</Button> : null}
           {task.project_id ? <Button icon="briefcase" onClick={() => router.push(projectAreaHref('project', context))}>{locale === 'ar' ? 'المشروع 360' : 'Project 360'}</Button> : null}
         </div>
@@ -57,6 +60,7 @@ function TaskDetail({ taskId, locale, onClose, router, onChanged }) {
       <div className="v7-detail-section v7-work360-recent"><h3>{locale === 'ar' ? 'آخر نشاط' : 'Recent activity'}</h3>{normalizeArray(data.events).length ? <div className="v7-linked-list">{normalizeArray(data.events).slice(0, 3).map(item => <article key={item.id}><Icon name="activity" size={15} /><span><strong>{item.event_type}</strong><small>{item.actor_name || (locale === 'ar' ? 'النظام' : 'System')} · {formatDate(item.created_at, locale)}</small></span></article>)}</div> : <p>{locale === 'ar' ? 'لم يتم تسجيل نشاط بعد.' : 'No activity has been recorded yet.'}</p>}</div>
       <WorkTaskActions data={data} locale={locale} onChanged={async () => { setReload(value => value + 1); await onChanged?.(); }} />
       <div className="v7-detail-section"><h3>{locale === 'ar' ? 'الأشخاص والمسؤوليات' : 'People & accountability'}</h3>{normalizeArray(data.assignments).length ? <div className="v7-linked-list">{normalizeArray(data.assignments).map(item => <article key={item.id}><Icon name="users" size={15} /><span><strong>{item.name || (locale === 'ar' ? item.role_name_ar : item.role_name_en) || item.role_name_en || item.role_name_ar || (locale === 'ar' ? 'مسند إليه' : 'Assignee')}</strong><small>{item.user_id ? (locale === 'ar' ? 'إسناد مباشر' : 'Direct assignment') : (locale === 'ar' ? 'إسناد بالدور' : 'Role assignment')}</small></span></article>)}</div> : <p>{locale === 'ar' ? 'لا توجد تعيينات إضافية؛ قد تكون المهمة مملوكة لمستخدم أو متاحة للاستلام.' : 'No additional assignments. The task may be owned or open for claiming.'}</p>}</div>
+      <WorkItemEditor open={editorOpen} onClose={() => setEditorOpen(false)} data={data} locale={locale} onSaved={async () => { setReload(value => value + 1); await onChanged?.(); }} />
     </>}
   </SideSheet>;
 }
