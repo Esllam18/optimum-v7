@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   calculateEngineeringTakeoff,
+  diffEngineeringSnapshots,
   engineeringSnapshotSvg,
   exportEngineeringDxfCompatible,
   mapClientPointToSvg,
@@ -121,6 +122,7 @@ export default function CadWorkspace({ drawingId, locale = 'ar', workspace, onCl
   const [error, setError] = useState(null);
   const [drawing, setDrawing] = useState(null);
   const [revision, setRevision] = useState(null);
+  const [revisions, setRevisions] = useState([]);
   const [catalog, setCatalog] = useState([]);
   const [marks, setMarks] = useState([]);
   const [assets, setAssets] = useState([]);
@@ -134,6 +136,9 @@ export default function CadWorkspace({ drawingId, locale = 'ar', workspace, onCl
   const [inspectorOpen, setInspectorOpen] = useState(true);
   const [takeoffOpen, setTakeoffOpen] = useState(false);
   const [libraryQuery, setLibraryQuery] = useState('');
+  const [libraryTab, setLibraryTab] = useState('elements');
+  const [favoriteCodes, setFavoriteCodes] = useState(() => new Set());
+  const [compareRevisionId, setCompareRevisionId] = useState('');
   const [placingCode, setPlacingCode] = useState('');
   const [routeCode, setRouteCode] = useState('DUCT-4W-7/3.5');
   const [connectSourceId, setConnectSourceId] = useState(null);
@@ -175,7 +180,7 @@ export default function CadWorkspace({ drawingId, locale = 'ar', workspace, onCl
       const current = revisions.find((item) => item.id === d.current_revision_id) || revisions[0];
       if (!current) throw new Error(locale === 'ar' ? 'لا يوجد إصدار متاح للرسم.' : 'No revision is available for this drawing.');
       const hydratedSettings = await hydrateLogoUrls(current.sheet_settings || {}, assetRows);
-      setDrawing(d); setRevision(current); setCatalog(catalogRows); setMarks(markRows); setAssets(assetRows);
+      setDrawing(d); setRevision(current); setRevisions(revisions); setCatalog(catalogRows); setMarks(markRows); setAssets(assetRows);
       setSnapshot(normalizeEngineeringSnapshot(current.snapshot || {})); setSettings(hydratedSettings);
       setLastSavedAt(current.updated_at || null);
       const savedRecovery = localStorage.getItem(`optimum.v7.cad.recovery.${d.company_id}.${current.id}`);
@@ -191,15 +196,36 @@ export default function CadWorkspace({ drawingId, locale = 'ar', workspace, onCl
     return () => controller.abort();
   }, [drawingId, hydrateLogoUrls, locale]);
 
+  useEffect(() => {
+    try { setFavoriteCodes(new Set(JSON.parse(localStorage.getItem('optimum.v7.cad.favorites') || '[]'))); } catch { setFavoriteCodes(new Set()); }
+  }, []);
+
+  const toggleCatalogFavorite = (code) => {
+    setFavoriteCodes((current) => {
+      const next = new Set(current);
+      if (next.has(code)) next.delete(code); else next.add(code);
+      try { localStorage.setItem('optimum.v7.cad.favorites', JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  };
+
   const takeoff = useMemo(() => calculateEngineeringTakeoff(snapshot, catalog, settings), [snapshot, catalog, settings]);
   const validation = useMemo(() => validateEngineeringSnapshot(snapshot, catalog, settings), [snapshot, catalog, settings]);
   const selectedNode = selected?.kind === 'node' ? snapshot.nodes.find((x) => x.id === selected.id) : null;
   const selectedRoute = selected?.kind === 'route' ? snapshot.routes.find((x) => x.id === selected.id) : null;
   const filteredCatalog = useMemo(() => {
     const q = libraryQuery.trim().toLowerCase();
-    return catalog.filter((item) => ['node', 'accessory'].includes(item.category) && (!q || [item.code, item.name_ar, item.name_en, item.symbol_key].some((v) => String(v || '').toLowerCase().includes(q)))).slice(0, 80);
-  }, [catalog, libraryQuery]);
+    return catalog.filter((item) => ['node', 'accessory'].includes(item.category) && (libraryTab !== 'favorites' || favoriteCodes.has(item.code)) && (!q || [item.code, item.name_ar, item.name_en, item.symbol_key].some((v) => String(v || '').toLowerCase().includes(q)))).slice(0, 80);
+  }, [catalog, libraryQuery, libraryTab, favoriteCodes]);
   const routeCatalog = useMemo(() => catalog.filter((item) => item.category === 'route').slice(0, 100), [catalog]);
+
+  const compareRevision = revisions.find((item) => item.id === compareRevisionId) || null;
+  const revisionDiff = useMemo(() => compareRevision ? diffEngineeringSnapshots(compareRevision.snapshot || {}, snapshot) : null, [compareRevision, snapshot]);
+  const diffTotals = useMemo(() => {
+    if (!revisionDiff) return null;
+    const groups = Object.values(revisionDiff);
+    return groups.reduce((acc, group) => ({ added: acc.added + group.added.length, removed: acc.removed + group.removed.length, changed: acc.changed + group.changed.length }), { added: 0, removed: 0, changed: 0 });
+  }, [revisionDiff]);
 
   const renderSettings = useMemo(() => {
     const next = clone(settings || {});
@@ -418,6 +444,7 @@ export default function CadWorkspace({ drawingId, locale = 'ar', workspace, onCl
         {notice ? <span className="v7-cad-notice">{notice}</span> : null}
         <button className="v7-cad-icon-button" onClick={() => setPaletteOpen((v) => !v)} title="Palette"><Icon name="grid" size={17} /></button>
         <button className="v7-cad-icon-button" onClick={() => setInspectorOpen((v) => !v)} title="Inspector"><Icon name="settings" size={17} /></button>
+        <label className="v7-cad-compare-select"><Icon name="layers" size={14}/><select value={compareRevisionId} onChange={(event) => setCompareRevisionId(event.target.value)} aria-label={locale === 'ar' ? 'مقارنة المراجعات' : 'Compare revisions'}><option value="">{locale === 'ar' ? 'مقارنة مراجعة…' : 'Compare revision…'}</option>{revisions.filter((item) => item.id !== revision?.id).map((item) => <option key={item.id} value={item.id}>{item.revision_code} · {item.status}</option>)}</select></label>
         <Button icon="layers" onClick={() => setTakeoffOpen(true)}>{locale === 'ar' ? 'الحصر' : 'Takeoff'}</Button>
         <Button icon="download" onClick={exportDxf}>DXF</Button>
         <Button icon="download" onClick={exportSvg}>SVG</Button>
@@ -429,13 +456,14 @@ export default function CadWorkspace({ drawingId, locale = 'ar', workspace, onCl
       {paletteOpen ? <aside className="v7-cad-palette">
         <header><div><span className="v7-eyebrow">COMPONENT LIBRARY</span><h3>{locale === 'ar' ? 'العناصر الهندسية' : 'Engineering components'}</h3></div><button onClick={() => setPaletteOpen(false)}><Icon name="close" size={16} /></button></header>
         <div className="v7-cad-search"><Icon name="search" size={15} /><input value={libraryQuery} onChange={(e) => setLibraryQuery(e.target.value)} placeholder={locale === 'ar' ? 'ابحث بالكود أو النوع…' : 'Search code or type…'} /></div>
-        <div className="v7-cad-library">{filteredCatalog.map((item) => <button key={item.id || item.code} className={placingCode === item.code ? 'is-active' : ''} disabled={!canEdit} onClick={() => { setPlacingCode(item.code); setConnectSourceId(null); }}><span><Icon name={String(item.symbol_key || '').includes('cabinet') ? 'briefcase' : 'layers'} size={15} /></span><div><strong>{labelFor(item, locale)}</strong><small>{item.code}</small></div></button>)}</div>
+        <div className="v7-cad-library-tabs"><button className={libraryTab==='elements'?'is-active':''} onClick={() => setLibraryTab('elements')}>{locale === 'ar' ? 'العناصر' : 'Elements'}</button><button className={libraryTab==='favorites'?'is-active':''} onClick={() => setLibraryTab('favorites')}><Icon name="star" size={13}/> {locale === 'ar' ? 'المفضلة' : 'Favorites'} <span>{favoriteCodes.size}</span></button></div>
+        <div className="v7-cad-library">{filteredCatalog.length ? filteredCatalog.map((item) => <article key={item.id || item.code} className={placingCode === item.code ? 'is-active' : ''}><button className="v7-cad-library-place" disabled={!canEdit} onClick={() => { setPlacingCode(item.code); setConnectSourceId(null); }}><span><Icon name={String(item.symbol_key || '').includes('cabinet') ? 'briefcase' : 'layers'} size={15} /></span><div><strong>{labelFor(item, locale)}</strong><small>{item.code}</small></div></button><button className={`v7-cad-library-favorite ${favoriteCodes.has(item.code)?'is-active':''}`} onClick={() => toggleCatalogFavorite(item.code)} aria-label={locale === 'ar' ? 'المفضلة' : 'Favorite'}><Icon name="star" size={13}/></button></article>) : <div className="v7-cad-library-empty"><Icon name="star" size={20}/><strong>{locale === 'ar' ? 'لا توجد عناصر مفضلة' : 'No favorite components'}</strong><small>{locale === 'ar' ? 'استخدم النجمة بجوار أي عنصر لإضافته هنا.' : 'Star any component to keep it here.'}</small></div>}</div>
         <div className="v7-cad-route-type"><span>{locale === 'ar' ? 'نوع المسار الجديد' : 'New route type'}</span><select value={routeCode} onChange={(e) => setRouteCode(e.target.value)}>{routeCatalog.map((item) => <option key={item.code} value={item.code}>{item.code} · {labelFor(item, locale)}</option>)}</select></div>
       </aside> : null}
 
       <main className="v7-cad-stage-wrap">
         <div className="v7-cad-stage-toolbar">
-          <div><Badge tone={validation.errorCount ? 'danger' : validation.warningCount ? 'warning' : 'success'}>{validation.errorCount}E · {validation.warningCount}W</Badge><span>{snapshot.nodes.length} {locale === 'ar' ? 'عنصر' : 'nodes'}</span><span>{snapshot.routes.length} {locale === 'ar' ? 'مسار' : 'routes'}</span><span>{takeoff.length} BOQ</span></div>
+          <div><Badge tone={validation.errorCount ? 'danger' : validation.warningCount ? 'warning' : 'success'}>{validation.errorCount}E · {validation.warningCount}W</Badge><span>{snapshot.nodes.length} {locale === 'ar' ? 'عنصر' : 'nodes'}</span><span>{snapshot.routes.length} {locale === 'ar' ? 'مسار' : 'routes'}</span><span>{takeoff.length} BOQ</span>{diffTotals ? <Badge tone="brand">{compareRevision?.revision_code} · +{diffTotals.added} / −{diffTotals.removed} / Δ{diffTotals.changed}</Badge> : null}</div>
           <div><button onClick={restoreLocal} disabled={!recoveryKey}><Icon name="refresh" size={15} /> {locale === 'ar' ? 'استعادة محلية' : 'Restore local'}</button><button onClick={fitCanvas} title={locale === 'ar' ? 'ملاءمة الشيت للشاشة (F)' : 'Fit sheet to view (F)'}><Icon name="map" size={14} /> {locale === 'ar' ? 'ملاءمة' : 'Fit'}</button><button onClick={() => setZoom((v) => Math.max(.35, v - .1))}>−</button><b>{Math.round(zoom * 100)}%</b><button onClick={() => setZoom((v) => Math.min(1.5, v + .1))}>+</button></div>
         </div>
         {placingCode ? <div className="v7-cad-mode-banner"><Icon name="plus" size={15} /> {locale === 'ar' ? `اضغط على الشيت لوضع ${placingCode}` : `Click the sheet to place ${placingCode}`} <button onClick={() => setPlacingCode('')}>{locale === 'ar' ? 'إلغاء' : 'Cancel'}</button></div> : null}
@@ -447,6 +475,7 @@ export default function CadWorkspace({ drawingId, locale = 'ar', workspace, onCl
       {inspectorOpen ? <aside className="v7-cad-inspector">
         <header><div><span className="v7-eyebrow">CONTEXT INSPECTOR</span><h3>{locale === 'ar' ? 'الخصائص والتحقق' : 'Properties & validation'}</h3></div><button onClick={() => setInspectorOpen(false)}><Icon name="close" size={16} /></button></header>
         {selectedNode ? <NodeInspector node={selectedNode} catalog={catalog} locale={locale} onChange={updateSelectedNode} onConnect={() => setConnectSourceId(selectedNode.id)} onDelete={deleteSelection} /> : selectedRoute ? <RouteInspector route={selectedRoute} catalog={catalog} locale={locale} onChange={updateSelectedRoute} onDelete={deleteSelection} /> : <div className="v7-cad-inspector-empty"><Icon name="cursor" size={24} /><strong>{locale === 'ar' ? 'اختر عنصرًا أو مسارًا' : 'Select a node or route'}</strong><p>{locale === 'ar' ? 'الخصائص تظهر هنا فقط لما تحتاجها، علشان مساحة الرسم تفضل نظيفة.' : 'Properties appear only when needed so the drawing area stays clean.'}</p></div>}
+        {revisionDiff ? <div className="v7-cad-revision-diff"><div className="v7-cad-validation-title"><strong>{locale === 'ar' ? 'مقارنة المراجعة' : 'Revision comparison'}</strong><Badge tone="brand">{compareRevision?.revision_code}</Badge></div><div className="v7-cad-diff-grid"><span><b>+{diffTotals.added}</b><small>{locale === 'ar' ? 'مضاف' : 'Added'}</small></span><span><b>−{diffTotals.removed}</b><small>{locale === 'ar' ? 'محذوف' : 'Removed'}</small></span><span><b>Δ{diffTotals.changed}</b><small>{locale === 'ar' ? 'متغير' : 'Changed'}</small></span></div><button onClick={() => setCompareRevisionId('')}>{locale === 'ar' ? 'إنهاء المقارنة' : 'Clear comparison'}</button></div> : null}
         <div className="v7-cad-validation"><div className="v7-cad-validation-title"><strong>{locale === 'ar' ? 'فحص الرسم' : 'Drawing validation'}</strong><Badge tone={validation.errorCount ? 'danger' : validation.warningCount ? 'warning' : 'success'}>{validation.issues.length}</Badge></div>{validation.issues.length ? validation.issues.slice(0, 12).map((issue) => <button key={issue.id} onClick={() => issue.kind && issue.id && setSelected({ kind: issue.kind === 'text' ? 'text' : issue.kind, id: issue.id.split(':').at(-1) })}><span className={`is-${issue.severity}`}><Icon name={issue.severity === 'error' ? 'alert' : 'info'} size={14} /></span><div><strong>{locale === 'ar' ? issue.message_ar : issue.message_en}</strong><small>{issue.code}</small></div></button>) : <div className="v7-cad-validation-ok"><Icon name="check" size={17} /> {locale === 'ar' ? 'لا توجد ملاحظات حالية.' : 'No current validation issues.'}</div>}</div>
       </aside> : null}
     </div>

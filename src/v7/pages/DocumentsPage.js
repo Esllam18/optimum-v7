@@ -153,6 +153,13 @@ export default function DocumentsPage({ workspace, locale }) {
   const [folderControl, setFolderControl] = useState({ mode: '', folder: null });
   const [storageOpen, setStorageOpen] = useState(false);
   const [reload, setReload] = useState(0);
+  const [favorites, setFavorites] = useState([]);
+  const [favoriteOnly, setFavoriteOnly] = useState(false);
+  const [favoriteRows, setFavoriteRows] = useState([]);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [selectedDocuments, setSelectedDocuments] = useState(() => new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkError, setBulkError] = useState('');
 
   useEffect(() => {
     const c = new AbortController();
@@ -161,6 +168,25 @@ export default function DocumentsPage({ workspace, locale }) {
       .catch(err => { if (err?.name !== 'AbortError') setError(err); });
     return () => c.abort();
   }, [workspace.company.id, requestedProject]);
+
+  useEffect(() => {
+    const c = new AbortController();
+    api.select('favorites', { filters: { company_id: `eq.${workspace.company.id}`, user_id: `eq.${workspace.user.id}` }, order: 'created_at.desc', limit: 1000, cacheTtlMs: 0, signal: c.signal })
+      .then(setFavorites).catch(() => setFavorites([]));
+    return () => c.abort();
+  }, [workspace.company.id, workspace.user.id, reload]);
+
+  useEffect(() => {
+    if (!favoriteOnly || !projectId) { setFavoriteRows([]); setFavoriteLoading(false); return; }
+    const ids = favorites.filter((row) => row.entity_type === 'document').map((row) => row.entity_id).filter(Boolean).slice(0, 100);
+    if (!ids.length) { setFavoriteRows([]); setFavoriteLoading(false); return; }
+    const c = new AbortController(); setFavoriteLoading(true);
+    const filters = { company_id: `eq.${workspace.company.id}`, project_id: `eq.${projectId}`, site_id: siteId ? `eq.${siteId}` : 'is.null', state: 'eq.active', id: `in.(${ids.join(',')})` };
+    api.select('documents', { select: 'id,project_id,site_id,folder_id,display_name,system_code,document_type,version_count,control_status,updated_at', filters, order: 'updated_at.desc', limit: 100, cacheTtlMs: 0, signal: c.signal })
+      .then(setFavoriteRows).catch((err) => { if (err?.name !== 'AbortError') setFavoriteRows([]); })
+      .finally(() => { if (!c.signal.aborted) setFavoriteLoading(false); });
+    return () => c.abort();
+  }, [favoriteOnly, favorites, projectId, siteId, workspace.company.id]);
 
   useEffect(() => {
     if (!projectId) { setSites([]); return; }
@@ -190,6 +216,7 @@ export default function DocumentsPage({ workspace, locale }) {
   }, [workspace.company.id, projectId, siteId, reload]);
 
   useEffect(() => { setPage(0); }, [projectId, siteId, folderId, query]);
+  useEffect(() => { setSelectedDocuments(new Set()); setBulkError(''); }, [projectId, siteId, folderId, query, page]);
 
   useEffect(() => {
     if (!folderId || query.trim().length >= 2) { setDocumentRows([]); setHasMore(false); return; }
@@ -227,18 +254,47 @@ export default function DocumentsPage({ workspace, locale }) {
     refreshDocuments();
   };
 
+  const isFavorite = (entityType, entityId) => favorites.some((row) => row.entity_type === entityType && row.entity_id === entityId);
+  const toggleFavorite = async (entityType, entityId) => {
+    if (!entityId) return;
+    setBulkError('');
+    try {
+      if (isFavorite(entityType, entityId)) {
+        await api.deleteRows('favorites', { filters: { user_id: `eq.${workspace.user.id}`, company_id: `eq.${workspace.company.id}`, entity_type: `eq.${entityType}`, entity_id: `eq.${entityId}` } });
+        setFavorites((rows) => rows.filter((row) => !(row.entity_type === entityType && row.entity_id === entityId)));
+      } else {
+        const rows = await api.insert('favorites', { user_id: workspace.user.id, company_id: workspace.company.id, entity_type: entityType, entity_id: entityId });
+        setFavorites((current) => [...rows, ...current]);
+      }
+    } catch (err) { setBulkError(err.message || (locale === 'ar' ? 'تعذر تحديث المفضلة.' : 'Could not update favorites.')); }
+  };
+  const toggleSelected = (id) => setSelectedDocuments((current) => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next; });
+  const bulkAction = async (action) => {
+    const ids = [...selectedDocuments];
+    if (!ids.length || bulkBusy) return;
+    setBulkBusy(true); setBulkError('');
+    try {
+      if (action === 'trash') await api.rpc('bulk_trash_documents', { p_document_ids: ids });
+      else await api.rpc('bulk_set_document_control_status', { p_document_ids: ids, p_status: action, p_review_due_at: action === 'in_review' ? new Date(Date.now() + 3 * 86400000).toISOString() : null });
+      setSelectedDocuments(new Set());
+      refreshDocuments();
+    } catch (err) { setBulkError(err.message || (locale === 'ar' ? 'تعذر تنفيذ الإجراء الجماعي.' : 'Could not complete the bulk action.')); }
+    finally { setBulkBusy(false); }
+  };
+
   if (error) return <ErrorState title={tx(locale, 'networkIssue')} description={error.message} retryLabel={tx(locale, 'retry')} onRetry={() => { api.clearReadCache(); setReload(value => value + 1); }} />;
   const searching = query.trim().length >= 2;
-  const docs = searching ? (searchRows || []) : documentRows;
+  const rawDocs = searching ? (searchRows || []) : documentRows;
+  const docs = favoriteOnly ? favoriteRows.filter((doc) => { const q = query.trim().toLowerCase(); return q.length < 2 || [doc.display_name, doc.system_code, doc.document_type].some((value) => String(value || '').toLowerCase().includes(q)); }) : rawDocs;
   const folders = normalizeArray(workspaceData?.folders).filter(f => !f.trashed_at);
   const project = (projects || []).find(p => p.id === projectId);
   const currentSite = sites.find(site => site.id === siteId);
   const currentFolder = folders.find(folder => folder.id === folderId);
   const folderDocumentTotal = folders.reduce((sum, folder) => sum + Number(folder.document_count || 0), 0);
-  const rowsLoading = searching ? searchLoading : documentLoading;
+  const rowsLoading = favoriteOnly ? favoriteLoading : searching ? searchLoading : documentLoading;
 
   return <>
-    <PageHeader eyebrow="CDE · DOCUMENT CONTROL" title={tx(locale, 'docsCenter')} description={tx(locale, 'docsCenterSub')} actions={<div className="v7-inline-actions">{can(workspace, 'files.view') ? <Button icon="archive" onClick={() => setStorageOpen(true)}>{locale === 'ar' ? 'ذكاء التخزين' : 'Storage'}</Button> : null}{can(workspace, 'files.view') ? <Button icon="trash" onClick={() => setTrashOpen(true)} disabled={!projectId}>{locale === 'ar' ? 'سلة CDE' : 'CDE trash'}</Button> : null}{can(workspace, 'files.create_folder') ? <Button icon="folder" onClick={() => setFolderControl({ mode: 'create', folder: currentFolder || null })} disabled={!projectId}>{currentFolder ? (locale === 'ar' ? 'مجلد فرعي' : 'Subfolder') : (locale === 'ar' ? 'مجلد جديد' : 'New folder')}</Button> : null}{can(workspace, 'files.upload') ? <Button variant="primary" icon="plus" onClick={() => setUploadOpen(true)} disabled={!folderId} title={!folderId ? (locale === 'ar' ? 'اختر مجلدًا أولًا' : 'Choose a folder first') : undefined}>{locale === 'ar' ? 'رفع مستند' : 'Upload document'}</Button> : null}</div>} />
+    <PageHeader eyebrow="CDE · DOCUMENT CONTROL" title={tx(locale, 'docsCenter')} description={tx(locale, 'docsCenterSub')} actions={<div className="v7-inline-actions">{can(workspace, 'files.view') ? <Button icon="star" onClick={() => { setFavoriteOnly((value) => !value); setPage(0); }}>{favoriteOnly ? (locale === 'ar' ? 'عرض كل المستندات' : 'Show all documents') : (locale === 'ar' ? 'المستندات المفضلة' : 'Favorite documents')}</Button> : null}{can(workspace, 'files.view') ? <Button icon="archive" onClick={() => setStorageOpen(true)}>{locale === 'ar' ? 'ذكاء التخزين' : 'Storage'}</Button> : null}{can(workspace, 'files.view') ? <Button icon="trash" onClick={() => setTrashOpen(true)} disabled={!projectId}>{locale === 'ar' ? 'سلة CDE' : 'CDE trash'}</Button> : null}{can(workspace, 'files.create_folder') ? <Button icon="folder" onClick={() => setFolderControl({ mode: 'create', folder: currentFolder || null })} disabled={!projectId}>{currentFolder ? (locale === 'ar' ? 'مجلد فرعي' : 'Subfolder') : (locale === 'ar' ? 'مجلد جديد' : 'New folder')}</Button> : null}{can(workspace, 'files.upload') ? <Button variant="primary" icon="plus" onClick={() => setUploadOpen(true)} disabled={!folderId} title={!folderId ? (locale === 'ar' ? 'اختر مجلدًا أولًا' : 'Choose a folder first') : undefined}>{locale === 'ar' ? 'رفع مستند' : 'Upload document'}</Button> : null}</div>} />
     <section className="v7-cde-context">
       <div className="v7-cde-scope">
         <span className="v7-eyebrow">ACTIVE CDE CONTEXT</span>
@@ -251,12 +307,14 @@ export default function DocumentsPage({ workspace, locale }) {
       <label><span>{tx(locale, 'site')}</span><select value={siteId} onChange={e => changeSite(e.target.value)}><option value="">{locale === 'ar' ? 'مستندات المشروع العامة' : 'Project-wide documents'}</option>{sites.map(site => <option key={site.id} value={site.id}>{site.code} — {site.name}</option>)}</select></label>
       <div className="v7-search-field"><Icon name="search" size={16} /><input value={query} onChange={e => setQuery(e.target.value)} placeholder={locale === 'ar' ? 'ابحث داخل سياق CDE الحالي…' : 'Search the current CDE context…'} /></div>
     </div>
+    {bulkError ? <div className="v7-form-error v7-cde-bulk-error">{bulkError}</div> : null}
+    {selectedDocuments.size ? <section className="v7-cde-bulk-bar"><div><Icon name="check" size={16}/><strong>{selectedDocuments.size} {locale === 'ar' ? 'مستند محدد' : 'documents selected'}</strong><Button onClick={() => setSelectedDocuments(new Set())}>{locale === 'ar' ? 'إلغاء التحديد' : 'Clear'}</Button></div><div>{can(workspace,'files.manage') ? <><Button onClick={() => bulkAction('in_review')} disabled={bulkBusy}>{locale === 'ar' ? 'إرسال للمراجعة' : 'Send to review'}</Button><Button onClick={() => bulkAction('approved')} disabled={bulkBusy}>{locale === 'ar' ? 'اعتماد' : 'Approve'}</Button><Button onClick={() => bulkAction('rejected')} disabled={bulkBusy}>{locale === 'ar' ? 'رفض' : 'Reject'}</Button></> : null}{can(workspace,'files.archive') ? <Button variant="danger" icon="trash" onClick={() => bulkAction('trash')} disabled={bulkBusy}>{locale === 'ar' ? 'إلى السلة' : 'Move to trash'}</Button> : null}</div></section> : null}
     <div className="v7-doc-layout">
-      <Panel className="v7-folder-panel" title={locale === 'ar' ? 'هيكل الملفات' : 'Folder structure'} description={project?.name || tx(locale, 'selectProject')} action={currentFolder ? <div className="v7-panel-actions">{can(workspace, 'files.rename') ? <Button icon="edit" onClick={() => setFolderControl({ mode: 'rename', folder: currentFolder })}>{locale === 'ar' ? 'تسمية' : 'Rename'}</Button> : null}{can(workspace, 'files.move') ? <Button icon="move" onClick={() => setFolderControl({ mode: 'move', folder: currentFolder })}>{locale === 'ar' ? 'نقل' : 'Move'}</Button> : null}{can(workspace, 'files.archive') && !currentFolder.is_system ? <Button variant="danger" icon="trash" onClick={() => setFolderControl({ mode: 'trash', folder: currentFolder })}>{locale === 'ar' ? 'سلة' : 'Trash'}</Button> : null}</div> : null}>
-        {!workspaceData ? <Skeleton lines={8} /> : folders.length ? <div className="v7-folder-list">{folders.map(folder => <button className={folder.id === folderId ? 'is-active' : ''} key={folder.id} onClick={() => openFolder(folder)} style={{ '--folder-depth': Math.max(0, Math.min(4, Number(folder.depth || 0))) }}><span className="v7-folder-icon"><Icon name="folder" size={16} /></span><span><strong>{folder.name}</strong><small>{folder.code || 'Folder'} · {folder.document_count ?? 0} {locale === 'ar' ? 'مستند' : 'docs'}</small></span>{Number(folder.child_count || 0) > 0 ? <span className="v7-folder-children">{folder.child_count}</span> : null}</button>)}</div> : <EmptyState icon="folder" title={tx(locale, 'noData')} />}
+      <Panel className="v7-folder-panel" title={locale === 'ar' ? 'هيكل الملفات' : 'Folder structure'} description={project?.name || tx(locale, 'selectProject')} action={currentFolder ? <div className="v7-panel-actions"><Button icon="star" onClick={() => toggleFavorite('folder', currentFolder.id)}>{isFavorite('folder',currentFolder.id) ? (locale === 'ar' ? 'إزالة من المفضلة' : 'Unfavorite') : (locale === 'ar' ? 'مفضلة' : 'Favorite')}</Button>{can(workspace, 'files.rename') ? <Button icon="edit" onClick={() => setFolderControl({ mode: 'rename', folder: currentFolder })}>{locale === 'ar' ? 'تسمية' : 'Rename'}</Button> : null}{can(workspace, 'files.move') ? <Button icon="move" onClick={() => setFolderControl({ mode: 'move', folder: currentFolder })}>{locale === 'ar' ? 'نقل' : 'Move'}</Button> : null}{can(workspace, 'files.archive') && !currentFolder.is_system ? <Button variant="danger" icon="trash" onClick={() => setFolderControl({ mode: 'trash', folder: currentFolder })}>{locale === 'ar' ? 'سلة' : 'Trash'}</Button> : null}</div> : null}>
+        {!workspaceData ? <Skeleton lines={8} /> : folders.length ? <div className="v7-folder-list">{folders.map(folder => <button className={folder.id === folderId ? 'is-active' : ''} key={folder.id} onClick={() => openFolder(folder)} style={{ '--folder-depth': Math.max(0, Math.min(4, Number(folder.depth || 0))) }}><span className="v7-folder-icon"><Icon name="folder" size={16} /></span><span><strong>{folder.name}{isFavorite('folder',folder.id) ? <Icon name="star" size={12} /> : null}</strong><small>{folder.code || 'Folder'} · {folder.document_count ?? 0} {locale === 'ar' ? 'مستند' : 'docs'}</small></span>{Number(folder.child_count || 0) > 0 ? <span className="v7-folder-children">{folder.child_count}</span> : null}</button>)}</div> : <EmptyState icon="folder" title={tx(locale, 'noData')} />}
       </Panel>
       <Panel className="v7-document-panel" title={searching ? (locale === 'ar' ? 'نتائج البحث' : 'Search results') : currentFolder?.name || tx(locale, 'documents')} description={searching ? `${locale === 'ar' ? 'بحث' : 'Search'}: ${query.trim()}` : currentFolder ? `${currentFolder.code || 'Folder'} · ${currentFolder.document_count ?? 0} ${locale === 'ar' ? 'مستند' : 'documents'}` : project?.name}>
-        {rowsLoading ? <Skeleton lines={8} /> : docs.length ? <><div className="v7-document-head"><span>{locale === 'ar' ? 'المستند' : 'Document'}</span><span>{locale === 'ar' ? 'الإصدار' : 'Version'}</span><span>{locale === 'ar' ? 'آخر تحديث' : 'Updated'}</span><span>{tx(locale, 'status')}</span><span /></div><div className="v7-document-list">{docs.map(doc => <button key={doc.id} onClick={() => openDocument(doc)}><span className="v7-file-icon"><Icon name="file" size={17} /></span><span className="v7-doc-name"><strong>{doc.display_name}</strong><small>{doc.system_code || doc.document_type || 'document'}</small></span><span className="v7-doc-version">V{doc.version_count || '—'}</span><span className="v7-doc-updated">{formatDate(doc.updated_at, locale)}</span><Badge tone={statusTone(doc.control_status)}>{doc.control_status || 'working'}</Badge><Icon name="chevron" size={15} /></button>)}</div><div className="v7-pager"><Button onClick={() => setPage(value => Math.max(0, value - 1))} disabled={page === 0} icon="arrow">{locale === 'ar' ? 'السابق' : 'Previous'}</Button><span>{locale === 'ar' ? `صفحة ${page + 1}` : `Page ${page + 1}`}</span><Button onClick={() => setPage(value => value + 1)} disabled={!hasMore} icon="chevron">{locale === 'ar' ? 'التالي' : 'Next'}</Button></div></> : <EmptyState icon="file" title={tx(locale, 'noDocuments')} description={!folderId && !searching ? (locale === 'ar' ? 'اختر مجلدًا لعرض مستنداته.' : 'Choose a folder to view its documents.') : searching ? (locale === 'ar' ? 'لا توجد مستندات مطابقة للبحث داخل هذا السياق.' : 'No documents match the search in this context.') : null} />}
+        {rowsLoading ? <Skeleton lines={8} /> : docs.length ? <><div className="v7-document-head v7-document-head--selectable"><span /><span>{locale === 'ar' ? 'المستند' : 'Document'}</span><span>{locale === 'ar' ? 'الإصدار' : 'Version'}</span><span>{locale === 'ar' ? 'آخر تحديث' : 'Updated'}</span><span>{tx(locale, 'status')}</span><span /></div><div className="v7-document-list v7-document-list--selectable">{docs.map(doc => <article className={selectedDocuments.has(doc.id)?'is-selected':''} key={doc.id}><label className="v7-doc-select" title={locale === 'ar' ? 'تحديد المستند' : 'Select document'}><input type="checkbox" checked={selectedDocuments.has(doc.id)} onChange={() => toggleSelected(doc.id)} /><span /></label><button className="v7-document-open" onClick={() => openDocument(doc)}><span className="v7-file-icon"><Icon name="file" size={17} /></span><span className="v7-doc-name"><strong>{doc.display_name}</strong><small>{doc.system_code || doc.document_type || 'document'}</small></span><span className="v7-doc-version">V{doc.version_count || '—'}</span><span className="v7-doc-updated">{formatDate(doc.updated_at, locale)}</span><Badge tone={statusTone(doc.control_status)}>{doc.control_status || 'working'}</Badge><Icon name="chevron" size={15} /></button><button className={`v7-doc-favorite ${isFavorite('document',doc.id)?'is-active':''}`} onClick={() => toggleFavorite('document',doc.id)} aria-label={locale === 'ar' ? 'المفضلة' : 'Favorite'}><Icon name="star" size={15}/></button></article>)}</div><div className="v7-pager">{favoriteOnly ? <span>{docs.length} {locale === 'ar' ? 'مستند مفضل في نطاق المشروع/الموقع الحالي' : 'favorite documents in the current project/site scope'}</span> : <><Button onClick={() => setPage(value => Math.max(0, value - 1))} disabled={page === 0} icon="arrow">{locale === 'ar' ? 'السابق' : 'Previous'}</Button><span>{locale === 'ar' ? `صفحة ${page + 1}` : `Page ${page + 1}`}</span><Button onClick={() => setPage(value => value + 1)} disabled={!hasMore} icon="chevron">{locale === 'ar' ? 'التالي' : 'Next'}</Button></>}</div></> : <EmptyState icon="file" title={tx(locale, 'noDocuments')} description={!folderId && !searching ? (locale === 'ar' ? 'اختر مجلدًا لعرض مستنداته.' : 'Choose a folder to view its documents.') : searching ? (locale === 'ar' ? 'لا توجد مستندات مطابقة للبحث داخل هذا السياق.' : 'No documents match the search in this context.') : null} />}
       </Panel>
     </div>
     <DocumentDetail documentId={documentId} workspace={workspace} locale={locale} folderOptions={folders} onClose={closeDocument} router={router} onChanged={refreshDocuments} />

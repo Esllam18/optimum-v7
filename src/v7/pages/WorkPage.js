@@ -11,6 +11,7 @@ import Icon from '../components/Icon';
 import SideSheet from '../components/SideSheet';
 import WorkTaskActions from '../components/WorkTaskActions';
 import WorkItemEditor from '../components/WorkItemEditor';
+import SavedWorkViews from '../components/SavedWorkViews';
 import { Badge, Button, EmptyState, ErrorState, PageHeader, Panel, Skeleton, Stat } from '../components/Primitives';
 
 const PAGE_SIZE = 25;
@@ -168,6 +169,23 @@ export default function WorkPage({ workspace, locale }) {
   const closeCreate = () => { setCreateOpen(false); router.replace(projectAreaHref('work', context)); };
   const changeStatus = (value) => { setStatus(value); setPage(0); };
   const clearAttentionFilter = () => { setDueFilter('all'); router.replace('/v7/work'); };
+  const savedViewFilters = {
+    status,
+    due: dueFilter,
+    search: query.trim(),
+    project_id: context.project_id || '',
+    site_id: context.site_id || '',
+    folder_id: context.folder_id || '',
+    document_id: context.document_id || ''
+  };
+  const applySavedView = (filters = {}) => {
+    const nextStatus = ['open', 'blocked', 'done', 'all'].includes(filters.status) ? filters.status : 'open';
+    const nextDue = ['all', 'overdue', 'today', 'week', 'none'].includes(filters.due) ? filters.due : 'all';
+    setStatus(nextStatus); setDueFilter(nextDue); setQuery(String(filters.search || '')); setPage(0);
+    router.replace(projectAreaHref('work', {
+      project_id: filters.project_id || '', site_id: filters.site_id || '', folder_id: filters.folder_id || '', document_id: filters.document_id || ''
+    }, { status: nextStatus, due: nextDue }));
+  };
   if (error) return <ErrorState title={tx(locale, 'networkIssue')} description={error.message} retryLabel={tx(locale, 'retry')} onRetry={() => setReload(x => x + 1)} />;
 
   const scoped = Boolean(context.project_id || context.site_id || context.folder_id || context.document_id);
@@ -184,6 +202,7 @@ export default function WorkPage({ workspace, locale }) {
         <div><span>{tx(locale, 'openWork')}</span><strong>{metrics?.my_todo ?? '—'}</strong></div>
       </div>
     </section> : <div className="v7-context-summary"><span><Icon name="check" size={18} /></span><div><strong>{payload?.total ?? '—'} {locale === 'ar' ? 'مهمة داخل السياق الحالي' : 'tasks in the current context'}</strong><small>{locale === 'ar' ? 'تم إلغاء مؤشرات الشركة العامة هنا حتى لا تختلط أرقام المؤسسة مع المشروع أو الموقع أو المستند المفتوح.' : 'Company-wide metrics are intentionally suppressed here so organization totals are not confused with the active project, site, folder or document.'}</small></div></div>}
+    <SavedWorkViews workspace={workspace} locale={locale} filters={savedViewFilters} onApply={applySavedView} autoApplyDefault={!taskId && !scoped && !params.get('status') && !params.get('due')} />
     <Panel className="v7-work-panel">
       <div className="v7-toolbar v7-work-toolbar"><div className="v7-search-field"><Icon name="search" size={16} /><input value={query} onChange={e => setQuery(e.target.value)} placeholder={tx(locale, 'search')} /></div><div className="v7-segments"><button className={status === 'open' ? 'is-active' : ''} onClick={() => changeStatus('open')}>{locale === 'ar' ? 'مفتوح' : 'Open'}</button><button className={status === 'blocked' ? 'is-active' : ''} onClick={() => changeStatus('blocked')}>{locale === 'ar' ? 'محجوب' : 'Blocked'}</button><button className={status === 'done' ? 'is-active' : ''} onClick={() => changeStatus('done')}>{locale === 'ar' ? 'مكتمل' : 'Done'}</button><button className={status === 'all' ? 'is-active' : ''} onClick={() => changeStatus('all')}>{tx(locale, 'all')}</button></div><div className="v7-segments v7-due-segments"><button className={dueFilter === 'all' ? 'is-active' : ''} onClick={() => { setDueFilter('all'); setPage(0); }}>{locale === 'ar' ? 'كل المواعيد' : 'Any due'}</button><button className={dueFilter === 'today' ? 'is-active' : ''} onClick={() => { setDueFilter('today'); setPage(0); }}>{locale === 'ar' ? 'اليوم' : 'Today'}</button><button className={dueFilter === 'overdue' ? 'is-active' : ''} onClick={() => { setDueFilter('overdue'); setPage(0); }}>{locale === 'ar' ? 'متأخر' : 'Overdue'}</button><button className={dueFilter === 'week' ? 'is-active' : ''} onClick={() => { setDueFilter('week'); setPage(0); }}>{locale === 'ar' ? 'هذا الأسبوع' : 'This week'}</button></div></div>
       {!payload ? <Skeleton lines={8} /> : rows.length ? <div className="v7-work-table"><div className="v7-work-head"><span>{locale === 'ar' ? 'المهمة' : 'Task'}</span><span>{locale === 'ar' ? 'السياق' : 'Context'}</span><span>{tx(locale, 'due')}</span><span>{tx(locale, 'status')}</span></div>{rows.map(task => <button className="v7-work-row" key={task.id} aria-label={`${task.title} · ${task.status || ''}`} onClick={() => openTask(task.id)}><span className="v7-work-title"><i className={`v7-priority-dot is-${task.priority || 'medium'}`} /><span><strong>#{task.task_number || '—'} · {task.title}</strong><small>{task.priority || 'medium'} · {task.risk?.level || 'low'} {locale === 'ar' ? 'مخاطر' : 'risk'}</small></span></span><span className="v7-work-context">{task.project_name || task.owner_name || '—'}</span><span className="v7-work-due">{formatDate(task.due_at, locale)}</span><span className="v7-work-status"><Badge tone={statusTone(task.status)}>{task.status}</Badge></span></button>)}</div> : <EmptyState icon="check" title={tx(locale, 'noTasks')} description={searchTerm ? (locale === 'ar' ? `لا توجد مهام تطابق «${searchTerm}».` : `No work matches “${searchTerm}”.`) : null} />}

@@ -315,6 +315,18 @@ class V7Api {
     return Array.isArray(data) ? data : data ? [data] : [];
   }
 
+  async deleteRows(table, { filters = {}, signal } = {}) {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') params.set(key, value);
+    });
+    const { data } = await this.request(`/rest/v1/${table}${params.size ? `?${params.toString()}` : ''}`, {
+      method: 'DELETE', headers: { Prefer: 'return=representation' }, signal, metricLabel: `delete:${table}`
+    });
+    this.clearReadCache();
+    return Array.isArray(data) ? data : data ? [data] : [];
+  }
+
   async uploadObject(bucket, path, file, { upsert = false, onProgress } = {}) {
     await this.ensureFreshSession();
     const url = `${this.url}/storage/v1/object/${encodeURIComponent(bucket)}/${String(path).split('/').map(encodeURIComponent).join('/')}`;

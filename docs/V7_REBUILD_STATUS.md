@@ -93,6 +93,7 @@ Supabase Performance Advisor initially identified an unindexed `user_id` FK and 
 8. `20260810084546` — `v7_invitation_preview_public_token_scope`
 9. `20260810092620` — `v7_client_telemetry`
 10. `20260810092938` — `v7_client_telemetry_performance_hardening`
+11. `20260810221851` — `v7_feature_parity_saved_views_bulk_cde`
 
 The active local migration filenames are aligned 1:1 with the live Production ledger for reproducible replay. The earlier standalone `v7_work_context_filters` draft was already folded into `v7_work_read_performance`; it is archived outside `supabase/migrations` so a future CLI push cannot attempt to apply it as an extra migration.
 

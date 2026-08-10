@@ -39,7 +39,7 @@ The root `Dockerfile`:
 - `service: optimum-v7`,
 - `runtime: next`,
 - release ID,
-- expected V7 schema head `20260810092938`.
+- expected V7 schema head `20260810221851`.
 
 It also returns `X-Optimum-App: v7`.
 

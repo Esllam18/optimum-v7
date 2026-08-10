@@ -47,7 +47,8 @@ const expected = [
   '20260809232304_v7_delivery_directory.sql',
   '20260810084546_v7_invitation_preview_public_token_scope.sql',
   '20260810092620_v7_client_telemetry.sql',
-  '20260810092938_v7_client_telemetry_performance_hardening.sql'
+  '20260810092938_v7_client_telemetry_performance_hardening.sql',
+  '20260810221851_v7_feature_parity_saved_views_bulk_cde.sql'
 ];
 add('v7-migration-chain', JSON.stringify(migrationNames) === JSON.stringify(expected), `active=${migrationNames.length}; expected=${expected.length}`);
 

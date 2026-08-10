@@ -32,7 +32,7 @@ try {
   try { healthBody = await health.response.json(); } catch {}
   add('health-status', health.response.ok, `GET /api/health -> ${health.response.status} in ${health.elapsed}ms`);
   add('health-service', healthBody?.ok === true && healthBody?.service === 'optimum-v7' && healthBody?.runtime === 'next', `service=${healthBody?.service || 'missing'}; runtime=${healthBody?.runtime || 'missing'}`);
-  add('health-schema-head', healthBody?.schemaHead === '20260810092938', `schemaHead=${healthBody?.schemaHead || 'missing'}`);
+  add('health-schema-head', healthBody?.schemaHead === '20260810221851', `schemaHead=${healthBody?.schemaHead || 'missing'}`);
   if (expectedRelease) add('health-release', healthBody?.release === expectedRelease, `expected=${expectedRelease}; deployed=${healthBody?.release || 'missing'}`);
   add('health-header', health.response.headers.get('x-optimum-app') === 'v7', `x-optimum-app=${health.response.headers.get('x-optimum-app') || 'missing'}`);
 
