@@ -14,6 +14,8 @@ import NewVersionSheet from '../components/NewVersionSheet';
 import DocumentControlSheet from '../components/DocumentControlSheet';
 import ClaimEvidenceSheet from '../components/ClaimEvidenceSheet';
 import CdeTrashSheet from '../components/CdeTrashSheet';
+import FolderControlSheet from '../components/FolderControlSheet';
+import StorageIntelligenceSheet from '../components/StorageIntelligenceSheet';
 import { Badge, Button, EmptyState, ErrorState, PageHeader, Panel, Skeleton } from '../components/Primitives';
 
 const PAGE_SIZE = 50;
@@ -142,6 +144,8 @@ export default function DocumentsPage({ workspace, locale }) {
   const [searchLoading, setSearchLoading] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [trashOpen, setTrashOpen] = useState(false);
+  const [folderControl, setFolderControl] = useState({ mode: '', folder: null });
+  const [storageOpen, setStorageOpen] = useState(false);
   const [reload, setReload] = useState(0);
 
   useEffect(() => {
@@ -208,6 +212,14 @@ export default function DocumentsPage({ workspace, locale }) {
   const openDocument = doc => router.push(documentsHref({ projectId: doc.project_id || projectId, siteId: doc.site_id || siteId, folderId: doc.folder_id || folderId, documentId: doc.id }));
   const closeDocument = () => router.push(documentsHref({ projectId, siteId, folderId }));
   const refreshDocuments = () => { api.clearReadCache(); setReload(value => value + 1); };
+  const closeFolderControl = () => setFolderControl({ mode: '', folder: null });
+  const folderChanged = async ({ mode } = {}) => {
+    if (mode === 'trash' && folderId === folderControl.folder?.id) {
+      setFolderId('');
+      router.replace(documentsHref({ projectId, siteId }));
+    }
+    refreshDocuments();
+  };
 
   if (error) return <ErrorState title={tx(locale, 'networkIssue')} description={error.message} retryLabel={tx(locale, 'retry')} onRetry={() => { api.clearReadCache(); setReload(value => value + 1); }} />;
   const searching = query.trim().length >= 2;
@@ -220,7 +232,7 @@ export default function DocumentsPage({ workspace, locale }) {
   const rowsLoading = searching ? searchLoading : documentLoading;
 
   return <>
-    <PageHeader eyebrow="CDE · DOCUMENT CONTROL" title={tx(locale, 'docsCenter')} description={tx(locale, 'docsCenterSub')} actions={<div className="v7-inline-actions">{can(workspace, 'files.view') ? <Button icon="trash" onClick={() => setTrashOpen(true)} disabled={!projectId}>{locale === 'ar' ? 'سلة CDE' : 'CDE trash'}</Button> : null}{can(workspace, 'files.upload') ? <Button variant="primary" icon="plus" onClick={() => setUploadOpen(true)} disabled={!folderId} title={!folderId ? (locale === 'ar' ? 'اختر مجلدًا أولًا' : 'Choose a folder first') : undefined}>{locale === 'ar' ? 'رفع مستند' : 'Upload document'}</Button> : null}</div>} />
+    <PageHeader eyebrow="CDE · DOCUMENT CONTROL" title={tx(locale, 'docsCenter')} description={tx(locale, 'docsCenterSub')} actions={<div className="v7-inline-actions">{can(workspace, 'files.view') ? <Button icon="archive" onClick={() => setStorageOpen(true)}>{locale === 'ar' ? 'ذكاء التخزين' : 'Storage'}</Button> : null}{can(workspace, 'files.view') ? <Button icon="trash" onClick={() => setTrashOpen(true)} disabled={!projectId}>{locale === 'ar' ? 'سلة CDE' : 'CDE trash'}</Button> : null}{can(workspace, 'files.create_folder') ? <Button icon="folder" onClick={() => setFolderControl({ mode: 'create', folder: currentFolder || null })} disabled={!projectId}>{currentFolder ? (locale === 'ar' ? 'مجلد فرعي' : 'Subfolder') : (locale === 'ar' ? 'مجلد جديد' : 'New folder')}</Button> : null}{can(workspace, 'files.upload') ? <Button variant="primary" icon="plus" onClick={() => setUploadOpen(true)} disabled={!folderId} title={!folderId ? (locale === 'ar' ? 'اختر مجلدًا أولًا' : 'Choose a folder first') : undefined}>{locale === 'ar' ? 'رفع مستند' : 'Upload document'}</Button> : null}</div>} />
     <section className="v7-cde-context">
       <div className="v7-cde-scope">
         <span className="v7-eyebrow">ACTIVE CDE CONTEXT</span>
@@ -234,7 +246,7 @@ export default function DocumentsPage({ workspace, locale }) {
       <div className="v7-search-field"><Icon name="search" size={16} /><input value={query} onChange={e => setQuery(e.target.value)} placeholder={locale === 'ar' ? 'ابحث داخل سياق CDE الحالي…' : 'Search the current CDE context…'} /></div>
     </div>
     <div className="v7-doc-layout">
-      <Panel className="v7-folder-panel" title={locale === 'ar' ? 'هيكل الملفات' : 'Folder structure'} description={project?.name || tx(locale, 'selectProject')}>
+      <Panel className="v7-folder-panel" title={locale === 'ar' ? 'هيكل الملفات' : 'Folder structure'} description={project?.name || tx(locale, 'selectProject')} action={currentFolder ? <div className="v7-panel-actions">{can(workspace, 'files.rename') ? <Button icon="edit" onClick={() => setFolderControl({ mode: 'rename', folder: currentFolder })}>{locale === 'ar' ? 'تسمية' : 'Rename'}</Button> : null}{can(workspace, 'files.move') ? <Button icon="move" onClick={() => setFolderControl({ mode: 'move', folder: currentFolder })}>{locale === 'ar' ? 'نقل' : 'Move'}</Button> : null}{can(workspace, 'files.archive') && !currentFolder.is_system ? <Button variant="danger" icon="trash" onClick={() => setFolderControl({ mode: 'trash', folder: currentFolder })}>{locale === 'ar' ? 'سلة' : 'Trash'}</Button> : null}</div> : null}>
         {!workspaceData ? <Skeleton lines={8} /> : folders.length ? <div className="v7-folder-list">{folders.map(folder => <button className={folder.id === folderId ? 'is-active' : ''} key={folder.id} onClick={() => openFolder(folder)} style={{ '--folder-depth': Math.max(0, Math.min(4, Number(folder.depth || 0))) }}><span className="v7-folder-icon"><Icon name="folder" size={16} /></span><span><strong>{folder.name}</strong><small>{folder.code || 'Folder'} · {folder.document_count ?? 0} {locale === 'ar' ? 'مستند' : 'docs'}</small></span>{Number(folder.child_count || 0) > 0 ? <span className="v7-folder-children">{folder.child_count}</span> : null}</button>)}</div> : <EmptyState icon="folder" title={tx(locale, 'noData')} />}
       </Panel>
       <Panel className="v7-document-panel" title={searching ? (locale === 'ar' ? 'نتائج البحث' : 'Search results') : currentFolder?.name || tx(locale, 'documents')} description={searching ? `${locale === 'ar' ? 'بحث' : 'Search'}: ${query.trim()}` : currentFolder ? `${currentFolder.code || 'Folder'} · ${currentFolder.document_count ?? 0} ${locale === 'ar' ? 'مستند' : 'documents'}` : project?.name}>
@@ -243,6 +255,8 @@ export default function DocumentsPage({ workspace, locale }) {
     </div>
     <DocumentDetail documentId={documentId} workspace={workspace} locale={locale} folderOptions={folders} onClose={closeDocument} router={router} onChanged={refreshDocuments} />
     <CdeTrashSheet open={trashOpen} onClose={() => setTrashOpen(false)} workspace={workspace} projectId={projectId} siteId={siteId} locale={locale} canRestore={can(workspace, 'files.restore')} onRestored={refreshDocuments} />
+    <FolderControlSheet open={Boolean(folderControl.mode)} onClose={closeFolderControl} mode={folderControl.mode} projectId={projectId} siteId={siteId} folder={folderControl.folder} folders={folders} locale={locale} onDone={folderChanged} />
+    <StorageIntelligenceSheet open={storageOpen} onClose={() => setStorageOpen(false)} workspace={workspace} locale={locale} />
     <UploadDocumentsSheet open={uploadOpen} onClose={() => setUploadOpen(false)} workspace={workspace} locale={locale} folderId={folderId} contextLabel={[project?.name, sites.find(site => site.id === siteId)?.name, folders.find(folder => folder.id === folderId)?.name].filter(Boolean).join(' · ')} onUploaded={() => { setUploadOpen(false); setSearchRows(null); setQuery(''); setPage(0); refreshDocuments(); }} />
   </>;
 }
