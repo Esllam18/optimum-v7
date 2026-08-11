@@ -112,5 +112,25 @@ with sync_playwright() as p:
             cols=page.locator('.v7-choice-grid').evaluate("e=>getComputedStyle(e).gridTemplateColumns.split(' ').length")
             if cols != 1: raise AssertionError(f'{name}: member choice grid should stack, got {cols}')
         page.close(); print(f'{name}: PASS overflow={overflow}px')
+    parity19_fixture=(ROOT/'tests/visual/v7-parity-19-fixture.html').read_text()
+    parity19_base=parity19_fixture.replace('<link rel="stylesheet" href="../../src/v7/v7.css">', f'<style>{css}</style>')
+    parity19_cases=[
+      ('parity19-desktop-light-rtl',1280,1100,'light','rtl'),
+      ('parity19-mobile-dark-ltr',390,844,'dark','ltr'),
+    ]
+    for name,w,h,theme,direction in parity19_cases:
+        html=parity19_base.replace('data-theme="light"',f'data-theme="{theme}"',1).replace('dir="rtl"',f'dir="{direction}"',1).replace('class="v7-root" dir="rtl"',f'class="v7-root" dir="{direction}"',1)
+        page=browser.new_page(viewport={'width':w,'height':h},device_scale_factor=1)
+        page.set_content(html,wait_until='domcontentloaded',timeout=15000); page.wait_for_timeout(50)
+        overflow=page.evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')
+        if overflow>1: raise AssertionError(f'{name}: horizontal overflow {overflow}px')
+        for sel in ['.v7-governance-policy','.v7-approval-list','.v7-offboarding-queue','.v7-offboarding-panel','.v7-security-settings-grid','.v7-connection-grid']:
+            box=page.locator(sel).first.bounding_box()
+            if not box or box['x'] < -1 or box['x']+box['width'] > w+1: raise AssertionError(f'{name}: {sel} escapes viewport: {box}')
+        if w<=680:
+            for sel in ['.v7-governance-toggles','.v7-security-settings-grid','.v7-connection-grid','.v7-offboarding-options']:
+                columns=page.locator(sel).evaluate("e=>getComputedStyle(e).gridTemplateColumns.split(' ').length")
+                if columns != 1: raise AssertionError(f'{name}: {sel} should stack, got {columns}')
+        page.close(); print(f'{name}: PASS overflow={overflow}px')
     browser.close()
 print('V7 responsive browser CSS smoke: PASS')

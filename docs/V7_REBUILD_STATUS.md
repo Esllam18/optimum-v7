@@ -157,3 +157,7 @@ The active local migration filenames are aligned 1:1 with the live Production le
 6. Trigger controlled telemetry and validate alert routing/log triage.
 7. Restore an actual backup/PITR point to non-production, run `v7_recovery_validation.sql`, compare to the matching baseline and record RPO/RTO.
 8. Only then issue the production GO decision.
+
+## Feature parity tranche 19
+
+Governance, controlled offboarding, compensation editing, richer company contacts, account-security visibility, and connection/runtime status have been restored in V7 using existing production-safe contracts. Schema head remains `20260810221851`. Final go-live remains intentionally paused until all legacy feature-parity and authenticated E2E gates close.
