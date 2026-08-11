@@ -102,11 +102,12 @@ The active local migration filenames are aligned 1:1 with the live Production le
 - `npm run test:v7` — **PASS** after native CAD extraction, native first-login, telemetry hardening and expanded CI/deployment-readiness contracts.
 - `npm run release:preflight` — **NO-GO with exactly one local blocker**: `next-binary` is not installed. All source, migration, legacy-independence, Edge-origin and recovery-artifact checks pass.
 - `npm run test:v7:visual` — **PASS** in Chromium.
-- Browser fixture matrix now covers **11 cases**:
+- Browser fixture matrix now covers **13 cases**:
   - application shell: desktop dark LTR, desktop light RTL, tablet dark RTL, mobile dark LTR, mobile light RTL.
   - invitation activation: desktop light RTL, mobile dark LTR, mobile light RTL.
   - first-login security: desktop light RTL, mobile dark LTR, mobile light RTL.
-- All 11 cases report **0 px horizontal document overflow**.
+  - parity tranche 18: desktop light RTL, mobile dark LTR (People bulk, Member Control, Organization OS and claim collection).
+- All 13 cases report **0 px horizontal document overflow**.
 - First-login mobile profile/password/rule grids collapse to one column; long account email remains LTR-isolated inside RTL.
 - Desktop first-login field containment is asserted against the card itself; a discovered RTL phone/WhatsApp field escape was fixed before checkpoint freeze.
 - Browser fixture QA uses the real V7 CSS and representative DOM. It is not a substitute for the blocked live Next runtime browser test.
@@ -132,6 +133,11 @@ The active local migration filenames are aligned 1:1 with the live Production le
 - A production recovery baseline was captured at `2026-08-10T10:41:51.504901Z`; all live integrity invariants were zero.
 - Read-only restore validator: `supabase/tests/v7_recovery_validation.sql`.
 - Recovery comparator: `scripts/recovery-compare.mjs`; it was tested with an exact-match fixture (**GO**) and an injected invariant failure (**NO-GO**).
+
+## Feature parity restoration status
+- Tranches 14–17 restored the V7 operating backbone, advanced Work/CDE actions, full Work editor/smart assignment, saved views, bulk document control and CAD revision/favorite depth.
+- Tranche 18 restores Member Control 360, People bulk role/status actions with undo, Organization setup/health/editing depth and canonical Site Delivery claim collection suggestions/auto-collect/removal.
+- Legacy parity is still open; governance/offboarding/compensation editing, settings/security/connections and remaining CAD/CDE/Delivery depth continue in subsequent tranches.
 
 ## Open release gates — do not describe as complete
 1. **Next production build/runtime** — `next` is still not installed in this execution environment; public package registries are DNS-blocked. No build success is claimed.

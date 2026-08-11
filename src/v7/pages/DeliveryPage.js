@@ -15,13 +15,16 @@ function PackageDetail({ packageId, locale, router, onClose }) {
   const [error, setError] = useState(null);
   const [actionError, setActionError] = useState('');
   const [running, setRunning] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
   const [reload, setReload] = useState(0);
   useEffect(() => {
     if (!packageId) { setData(null); setError(null); return; }
     const c = new AbortController();
     setData(null); setError(null); setActionError('');
-    api.rpc('site_claim_package_360', { p_package_id: packageId }, { cacheTtlMs: 8_000, signal: c.signal, dedupe: true })
-      .then(setData).catch(err => { if (err?.name !== 'AbortError') setError(err); });
+    Promise.all([
+      api.rpc('site_claim_package_360', { p_package_id: packageId }, { cacheTtlMs: 8_000, signal: c.signal, dedupe: true }),
+      api.rpc('site_claim_suggestions', { p_package_id: packageId }, { cacheTtlMs: 5_000, signal:c.signal, dedupe:true }).catch(() => [])
+    ]).then(([detail, suggested]) => { setData(detail); setSuggestions(normalizeArray(suggested)); }).catch(err => { if (err?.name !== 'AbortError') setError(err); });
     return () => c.abort();
   }, [packageId, reload]);
 
@@ -39,6 +42,29 @@ function PackageDetail({ packageId, locale, router, onClose }) {
     } catch (err) { setActionError(err.message || (locale === 'ar' ? 'تعذر تحديث حالة المستخلص.' : 'Could not update the claim package.')); }
     finally { setRunning(''); }
   };
+  const autoCollect = async () => {
+    if (running || !pkg.id) return;
+    setRunning('auto'); setActionError('');
+    try { await api.rpc('auto_collect_site_claim', { p_package_id:pkg.id }); api.clearReadCache(); setReload(value => value + 1); }
+    catch (err) { setActionError(err.message || (locale === 'ar' ? 'تعذر التجميع التلقائي.' : 'Auto-collect failed.')); }
+    finally { setRunning(''); }
+  };
+  const addSuggestion = async suggestion => {
+    if (running || !pkg.id) return;
+    setRunning(`add-${suggestion.document_id}`); setActionError('');
+    try {
+      await api.rpc('add_document_to_site_claim', { p_document_id:suggestion.document_id, p_requirement_key:suggestion.requirement_key, p_package_id:pkg.id, p_cabinet_id:suggestion.cabinet_id || null, p_inclusion_mode:'manual' });
+      api.clearReadCache(); setReload(value => value + 1);
+    } catch (err) { setActionError(err.message || (locale === 'ar' ? 'تعذر إضافة المستند.' : 'Could not add document.')); }
+    finally { setRunning(''); }
+  };
+  const removeEvidence = async itemId => {
+    if (running || !itemId) return;
+    setRunning(`remove-${itemId}`); setActionError('');
+    try { await api.rpc('remove_site_claim_item', { p_item_id:itemId }); api.clearReadCache(); setReload(value => value + 1); }
+    catch (err) { setActionError(err.message || (locale === 'ar' ? 'تعذر إزالة المستند من الحزمة.' : 'Could not remove evidence.')); }
+    finally { setRunning(''); }
+  };
   return <SideSheet open={Boolean(packageId)} onClose={onClose} eyebrow="DELIVERY 360" title={data ? `${pkg.package_no} · ${pkg.title}` : tx(locale, 'loading')} subtitle={data ? [data.project?.name, data.site?.name, pkg.claim_type].filter(Boolean).join(' · ') : ''}>
     {error ? <ErrorState title={tx(locale, 'networkIssue')} description={error.message} /> : !data ? <Skeleton lines={11} /> : <>
       <div className="v7-detail-section">
@@ -49,11 +75,12 @@ function PackageDetail({ packageId, locale, router, onClose }) {
           <div className="v7-detail-field"><span>{locale === 'ar' ? 'تغطية الكابينات' : 'Cabinet coverage'}</span><strong>{progress.cabinet_coverage_percent ?? 0}%</strong></div>
         </div>
         <div className="v7-progress v7-progress--large"><i style={{ width: `${Math.max(0, Math.min(100, Number(progress.overall_percent || 0)))}%` }} /></div>
-        <div className="v7-inline-actions">{pkg.project_id ? <Button icon="briefcase" onClick={() => router.push(projectAreaHref('project', context))}>{locale === 'ar' ? 'المشروع 360' : 'Project 360'}</Button> : null}{pkg.project_id ? <Button icon="folder" onClick={() => router.push(projectAreaHref('documents', context))}>{locale === 'ar' ? 'فتح المستندات' : 'Open CDE'}</Button> : null}{data.can_manage && !pkg.locked_at && !['submitted','approved','archived'].includes(pkg.status) ? <Button variant="primary" icon="archive" onClick={() => runLifecycle('freeze')} disabled={Boolean(running)}>{running === 'freeze' ? (locale === 'ar' ? 'جارٍ التجميد…' : 'Freezing…') : (locale === 'ar' ? 'تجميد الإصدارات' : 'Freeze versions')}</Button> : null}{data.can_manage && pkg.locked_at && pkg.status === 'ready' ? <Button icon="refresh" onClick={() => runLifecycle('reopen')} disabled={Boolean(running)}>{running === 'reopen' ? '…' : (locale === 'ar' ? 'إعادة فتح التجميع' : 'Reopen collection')}</Button> : null}{data.can_manage && pkg.locked_at && pkg.status === 'ready' ? <Button variant="primary" icon="delivery" onClick={() => runLifecycle('submit')} disabled={Boolean(running)}>{running === 'submit' ? (locale === 'ar' ? 'جارٍ التقديم…' : 'Submitting…') : (locale === 'ar' ? 'تقديم المستخلص' : 'Submit package')}</Button> : null}</div>
+        <div className="v7-inline-actions">{pkg.project_id ? <Button icon="briefcase" onClick={() => router.push(projectAreaHref('project', context))}>{locale === 'ar' ? 'المشروع 360' : 'Project 360'}</Button> : null}{pkg.project_id ? <Button icon="folder" onClick={() => router.push(projectAreaHref('documents', context))}>{locale === 'ar' ? 'فتح المستندات' : 'Open CDE'}</Button> : null}{data.can_manage && !pkg.locked_at && suggestions.length ? <Button icon="refresh" onClick={autoCollect} disabled={Boolean(running)}>{running === 'auto' ? (locale === 'ar' ? 'جارٍ التجميع…' : 'Collecting…') : (locale === 'ar' ? `تجميع تلقائي (${suggestions.length})` : `Auto-collect (${suggestions.length})`)}</Button> : null}{data.can_manage && !pkg.locked_at && !['submitted','approved','archived'].includes(pkg.status) ? <Button variant="primary" icon="archive" onClick={() => runLifecycle('freeze')} disabled={Boolean(running)}>{running === 'freeze' ? (locale === 'ar' ? 'جارٍ التجميد…' : 'Freezing…') : (locale === 'ar' ? 'تجميد الإصدارات' : 'Freeze versions')}</Button> : null}{data.can_manage && pkg.locked_at && pkg.status === 'ready' ? <Button icon="refresh" onClick={() => runLifecycle('reopen')} disabled={Boolean(running)}>{running === 'reopen' ? '…' : (locale === 'ar' ? 'إعادة فتح التجميع' : 'Reopen collection')}</Button> : null}{data.can_manage && pkg.locked_at && pkg.status === 'ready' ? <Button variant="primary" icon="delivery" onClick={() => runLifecycle('submit')} disabled={Boolean(running)}>{running === 'submit' ? (locale === 'ar' ? 'جارٍ التقديم…' : 'Submitting…') : (locale === 'ar' ? 'تقديم المستخلص' : 'Submit package')}</Button> : null}</div>
         {actionError ? <div className="v7-form-error">{actionError}</div> : null}
       </div>
       <div className="v7-detail-section"><h3>{locale === 'ar' ? 'حالة التقديم' : 'Submission state'}</h3><div className="v7-detail-grid"><div className="v7-detail-field"><span>{locale === 'ar' ? 'أُنشئت' : 'Created'}</span><strong>{formatDate(pkg.created_at, locale)}</strong></div><div className="v7-detail-field"><span>{locale === 'ar' ? 'قُدمت' : 'Submitted'}</span><strong>{formatDate(pkg.submitted_at, locale)}</strong></div><div className="v7-detail-field"><span>{locale === 'ar' ? 'اعتمدت' : 'Approved'}</span><strong>{formatDate(pkg.approved_at, locale)}</strong></div><div className="v7-detail-field"><span>{locale === 'ar' ? 'وضع الإصدارات' : 'Version mode'}</span><strong>{pkg.locked_at ? (locale === 'ar' ? 'مجمدة' : 'Frozen') : (locale === 'ar' ? 'يتتبع المستندات الأصلية' : 'Tracks canonical docs')}</strong></div></div></div>
-      <div className="v7-detail-section"><h3>{locale === 'ar' ? 'متطلبات الأدلة' : 'Evidence requirements'}</h3>{requirements.length ? <div className="v7-requirements">{requirements.map(requirement => <article key={requirement.id} className={requirement.satisfied ? 'is-satisfied' : ''}><span className="v7-requirement-state"><Icon name={requirement.satisfied ? 'check' : requirement.is_required ? 'alert' : 'clock'} size={16} /></span><div><strong>{locale === 'ar' ? requirement.label_ar : requirement.label_en}</strong><small>{requirement.category} · {requirement.item_count || 0}/{requirement.min_items || 0} {locale === 'ar' ? 'عنصر' : 'items'}{requirement.is_required ? (locale === 'ar' ? ' · مطلوب' : ' · required') : (locale === 'ar' ? ' · اختياري' : ' · optional')}</small>{normalizeArray(requirement.items).length ? <div className="v7-linked-list v7-linked-list--compact">{normalizeArray(requirement.items).map(item => <button key={item.id || item.item_id} onClick={() => item.document_id && router.push(projectAreaHref('documents', context, { document: item.document_id }))}><Icon name="file" size={14} /><span><strong>{item.display_name || item.document_name || item.document_id || (locale === 'ar' ? 'مستند' : 'Document')}</strong><small>{item.selected_version_id ? (locale === 'ar' ? 'إصدار مثبت' : 'Pinned version') : (locale === 'ar' ? 'المستند الأصلي' : 'Canonical document')}</small></span><Icon name="chevron" size={13} /></button>)}</div> : null}</div><Badge tone={requirement.satisfied ? 'success' : requirement.is_required ? 'warning' : 'neutral'}>{requirement.satisfied ? (locale === 'ar' ? 'جاهز' : 'Ready') : (locale === 'ar' ? 'ناقص' : 'Missing')}</Badge></article>)}</div> : <EmptyState icon="delivery" title={tx(locale, 'noData')} />}</div>
+      <div className="v7-detail-section"><h3>{locale === 'ar' ? 'متطلبات الأدلة' : 'Evidence requirements'}</h3>{requirements.length ? <div className="v7-requirements">{requirements.map(requirement => <article key={requirement.id} className={requirement.satisfied ? 'is-satisfied' : ''}><span className="v7-requirement-state"><Icon name={requirement.satisfied ? 'check' : requirement.is_required ? 'alert' : 'clock'} size={16} /></span><div><strong>{locale === 'ar' ? requirement.label_ar : requirement.label_en}</strong><small>{requirement.category} · {requirement.item_count || 0}/{requirement.min_items || 0} {locale === 'ar' ? 'عنصر' : 'items'}{requirement.is_required ? (locale === 'ar' ? ' · مطلوب' : ' · required') : (locale === 'ar' ? ' · اختياري' : ' · optional')}</small>{normalizeArray(requirement.items).length ? <div className="v7-claim-evidence-list">{normalizeArray(requirement.items).map(item => <article key={item.id || item.item_id}><button onClick={() => item.document_id && router.push(projectAreaHref('documents', context, { document: item.document_id }))}><Icon name="file" size={14} /><span><strong>{item.display_name || item.document_name || item.document_id || (locale === 'ar' ? 'مستند' : 'Document')}</strong><small>{item.selected_version_id ? (locale === 'ar' ? 'إصدار مثبت' : 'Pinned version') : (locale === 'ar' ? 'المستند الأصلي' : 'Canonical document')}</small></span><Icon name="chevron" size={13} /></button>{data.can_manage && !pkg.locked_at ? <Button variant="danger" icon="trash" onClick={() => removeEvidence(item.id || item.item_id)} disabled={Boolean(running)}>{locale === 'ar' ? 'إزالة' : 'Remove'}</Button> : null}</article>)}</div> : null}</div><Badge tone={requirement.satisfied ? 'success' : requirement.is_required ? 'warning' : 'neutral'}>{requirement.satisfied ? (locale === 'ar' ? 'جاهز' : 'Ready') : (locale === 'ar' ? 'ناقص' : 'Missing')}</Badge></article>)}</div> : <EmptyState icon="delivery" title={tx(locale, 'noData')} />}</div>
+      {data.can_manage && !pkg.locked_at ? <div className="v7-detail-section"><h3>{locale === 'ar' ? 'مقترحات التجميع الذكي' : 'Smart collection suggestions'}</h3>{suggestions.length ? <div className="v7-claim-suggestions">{suggestions.slice(0,20).map(item => <article key={`${item.requirement_key}-${item.document_id}`}><span><Icon name="file" size={15} /></span><div><strong>{item.display_name}</strong><small>{locale === 'ar' ? item.requirement_label_ar : item.requirement_label_en}{item.cabinet_id ? ` · ${locale === 'ar' ? 'كابينة' : 'Cabinet'}` : ''}</small></div><Button icon="plus" onClick={() => addSuggestion(item)} disabled={Boolean(running)}>{running === `add-${item.document_id}` ? '…' : (locale === 'ar' ? 'إضافة' : 'Add')}</Button></article>)}</div> : <EmptyState icon="check" title={locale === 'ar' ? 'لا توجد مستندات جديدة مقترحة' : 'No new document suggestions'} description={locale === 'ar' ? 'كل المستندات القابلة للتجميع موجودة بالفعل أو لا تطابق قواعد التصنيف.' : 'All eligible documents are already included or do not match classification rules.'} />}</div> : null}
     </>}
   </SideSheet>;
 }

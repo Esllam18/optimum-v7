@@ -6,6 +6,7 @@ import { api } from '../lib/api';
 import { can } from '../lib/workspace';
 import BrandAvatar from '../components/BrandAvatar';
 import MemberInviteSheet from '../components/MemberInviteSheet';
+import MemberControlSheet from '../components/MemberControlSheet';
 import { formatDate, normalizeArray, statusTone } from '../lib/format';
 import { tx } from '../lib/i18n';
 import Icon from '../components/Icon';
@@ -14,7 +15,7 @@ import { Badge, Button, EmptyState, ErrorState, PageHeader, Panel, Skeleton, Sta
 
 const PAGE_SIZE = 50;
 
-function MemberDetail({ membershipId, locale, onClose }) {
+function MemberDetail({ membershipId, locale, workspace, onClose, onManage }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   useEffect(() => {
@@ -33,6 +34,7 @@ function MemberDetail({ membershipId, locale, onClose }) {
   return <SideSheet open={Boolean(membershipId)} onClose={onClose} eyebrow="MEMBER 360" title={data ? profile.full_name || tx(locale, 'members') : tx(locale, 'loading')} subtitle={data ? [member.job_title, member.department, locale === 'ar' ? role.name_ar : role.name_en].filter(Boolean).join(' · ') : ''}>
     {error ? <ErrorState title={tx(locale, 'networkIssue')} description={error.message} /> : !data ? <Skeleton lines={10} /> : <>
       <div className="v7-member-identity"><BrandAvatar path={profile.avatar_path} name={profile.full_name} size={54} /><div><strong>{profile.full_name || '—'}</strong><span>{member.employee_code || member.employment_type || '—'}</span></div><Badge tone={statusTone(member.status)}>{member.status}</Badge></div>
+      {can(workspace, 'members.manage') ? <div className="v7-inline-actions"><Button variant="primary" icon="settings" onClick={() => onManage?.(membershipId)}>{locale === 'ar' ? 'إدارة ملف العضو' : 'Manage member profile'}</Button></div> : null}
       <div className="v7-detail-section"><div className="v7-detail-grid"><div className="v7-detail-field"><span>{locale === 'ar' ? 'الدور' : 'Role'}</span><strong>{locale === 'ar' ? role.name_ar : role.name_en}</strong></div><div className="v7-detail-field"><span>{locale === 'ar' ? 'نمط العمل' : 'Work mode'}</span><strong>{member.work_mode || '—'}</strong></div><div className="v7-detail-field"><span>{locale === 'ar' ? 'تاريخ الانضمام' : 'Joined'}</span><strong>{formatDate(member.joined_at, locale)}</strong></div><div className="v7-detail-field"><span>{locale === 'ar' ? 'الطاقة' : 'Capacity'}</span><strong>{member.weekly_capacity_hours ?? '—'} h/w</strong></div></div></div>
       <div className="v7-detail-section"><h3>{locale === 'ar' ? 'نافذة الوصول' : 'Access window'}</h3><div className="v7-detail-grid"><div className="v7-detail-field"><span>{locale === 'ar' ? 'يبدأ' : 'Starts'}</span><strong>{formatDate(member.access_starts_at, locale)}</strong></div><div className="v7-detail-field"><span>{locale === 'ar' ? 'ينتهي' : 'Ends'}</span><strong>{formatDate(member.access_ends_at, locale)}</strong></div><div className="v7-detail-field"><span>{locale === 'ar' ? 'مرحلة العضوية' : 'Lifecycle'}</span><strong>{member.lifecycle_stage || 'active'}</strong></div><div className="v7-detail-field"><span>{locale === 'ar' ? 'الموقع الرئيسي' : 'Primary site'}</span><strong>{member.primary_site_id ? (locale === 'ar' ? 'محدد' : 'Assigned') : (locale === 'ar' ? 'نطاق الشركة' : 'Company scope')}</strong></div></div></div>
       <div className="v7-detail-section"><h3>{locale === 'ar' ? 'الوحدات التنظيمية' : 'Organization units'}</h3>{normalizeArray(data.organization_units).length ? <div className="v7-linked-list">{normalizeArray(data.organization_units).map(unit => <article key={unit.id || unit.unit_id}><Icon name="users" size={15} /><span><strong>{locale === 'ar' ? unit.name_ar : unit.name_en}</strong><small>{unit.unit_type || unit.title || (locale === 'ar' ? 'وحدة تنظيمية' : 'Organization unit')}</small></span></article>)}</div> : <p>{locale === 'ar' ? 'لا توجد وحدة تنظيمية مرتبطة بهذا العضو بشكل صريح.' : 'No organization unit is explicitly assigned.'}</p>}</div>
@@ -56,6 +58,12 @@ export default function PeoplePage({ workspace, locale }) {
   const [offset, setOffset] = useState(0);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [controlMemberId, setControlMemberId] = useState('');
+  const [selected, setSelected] = useState(new Set());
+  const [bulkRoleId, setBulkRoleId] = useState('');
+  const [bulkBusy, setBulkBusy] = useState('');
+  const [bulkError, setBulkError] = useState('');
+  const [bulkUndo, setBulkUndo] = useState(null);
 
   useEffect(() => {
     const timer = setTimeout(() => { setDebouncedQuery(query.trim()); setOffset(0); }, 300);
@@ -94,6 +102,29 @@ export default function PeoplePage({ workspace, locale }) {
   const closeMember = () => router.push('/v7/people');
   const refresh = async () => { api.clearReadCache(); setRefreshKey(k => k + 1); };
   const roleOptions = useMemo(() => roles.filter(r => r.slug !== 'owner' || can(workspace, 'members.manage')), [roles, workspace]);
+  const selectedRows = rows.filter(row => selected.has(row.membership_id));
+  const toggleSelected = (id) => setSelected(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
+  const selectVisible = () => setSelected(new Set(rows.filter(row => row.role_slug !== 'owner' && row.role_name_en !== 'Owner').map(row => row.membership_id).slice(0, 200)));
+  const runBulk = async (action) => {
+    if (!selectedRows.length || bulkBusy) return;
+    if (action === 'role' && !bulkRoleId) { setBulkError(locale === 'ar' ? 'اختر الدور أولًا.' : 'Choose a role first.'); return; }
+    setBulkBusy(action); setBulkError('');
+    const undo = selectedRows.map(row => ({ membership_id:row.membership_id, role_id:row.role_id, status:row.status }));
+    try {
+      if (action === 'role') await api.rpc('bulk_set_member_role', { p_membership_ids:selectedRows.map(row => row.membership_id), p_role_id:bulkRoleId });
+      else await api.rpc('bulk_set_member_status', { p_membership_ids:selectedRows.map(row => row.membership_id), p_status:action === 'suspend' ? 'suspended' : 'active' });
+      setSelected(new Set()); setBulkUndo({ items:undo, expires:Date.now()+20_000 }); api.clearReadCache(); setRefreshKey(k => k + 1);
+      setTimeout(() => setBulkUndo(current => current?.expires <= Date.now() ? null : current), 20_500);
+    } catch (err) { setBulkError(err.message || (locale === 'ar' ? 'تعذر تنفيذ الإجراء الجماعي.' : 'Bulk action failed.')); }
+    finally { setBulkBusy(''); }
+  };
+  const undoBulk = async () => {
+    if (!bulkUndo || bulkUndo.expires < Date.now() || bulkBusy) return;
+    setBulkBusy('undo'); setBulkError('');
+    try { await api.rpc('bulk_restore_member_access', { p_items:bulkUndo.items }); setBulkUndo(null); api.clearReadCache(); setRefreshKey(k => k + 1); }
+    catch (err) { setBulkError(err.message || (locale === 'ar' ? 'تعذر التراجع.' : 'Undo failed.')); }
+    finally { setBulkBusy(''); }
+  };
 
   if (error && !directory) return <ErrorState title={tx(locale, 'networkIssue')} description={error.message} />;
 
@@ -108,10 +139,14 @@ export default function PeoplePage({ workspace, locale }) {
         <span className="v7-toolbar-count">{total} {locale === 'ar' ? 'عضو' : 'members'}</span>
       </div>
       {error ? <div className="v7-inline-error">{error.message}</div> : null}
-      {!directory ? <Skeleton lines={8} /> : rows.length ? <><div className="v7-people-head"><span>{locale === 'ar' ? 'العضو' : 'Member'}</span><span>{locale === 'ar' ? 'الدور' : 'Role'}</span><span>{locale === 'ar' ? 'النطاق' : 'Scope'}</span><span>{tx(locale, 'status')}</span><span /></div><div className="v7-people-list">{rows.map(row => <button key={row.membership_id} aria-label={`${row.full_name || row.email || ''} · ${row.status || ''}`} onClick={() => openMember(row.membership_id)}><BrandAvatar path={row.avatar_path} name={row.full_name || row.email} size={38} /><span className="v7-person-name"><strong>{row.full_name || row.email || '—'}</strong><small>{row.job_title || row.department || row.employee_code || '—'}</small></span><span className="v7-person-role">{locale === 'ar' ? (row.role_name_ar || row.role_name_en) : (row.role_name_en || row.role_name_ar)}</span><span className="v7-person-scope">{row.primary_site_id ? (locale === 'ar' ? 'موقع محدد' : 'Site assigned') : (locale === 'ar' ? 'نطاق الشركة' : 'Company scope')}</span><Badge tone={statusTone(row.status)}>{row.status}</Badge><Icon name="chevron" size={15} /></button>)}</div></> : <EmptyState icon="users" title={tx(locale, 'noMembers')} />}
+      {can(workspace,'members.manage') && selected.size ? <div className="v7-bulk-bar"><div><strong>{selected.size} {locale === 'ar' ? 'عضو محدد' : 'members selected'}</strong><small>{locale === 'ar' ? 'إجراءات جماعية آمنة — Owner مستبعد من التحديد.' : 'Safe bulk actions — Owner is excluded from selection.'}</small></div><div><select value={bulkRoleId} onChange={e => setBulkRoleId(e.target.value)}><option value="">{locale === 'ar' ? 'تغيير الدور…' : 'Change role…'}</option>{roles.filter(r => r.slug !== 'owner').map(r => <option key={r.id} value={r.id}>{locale === 'ar' ? r.name_ar : r.name_en}</option>)}</select><Button icon="shield" onClick={() => runBulk('role')} disabled={Boolean(bulkBusy)}>{locale === 'ar' ? 'تطبيق الدور' : 'Apply role'}</Button><Button icon="check" onClick={() => runBulk('activate')} disabled={Boolean(bulkBusy)}>{locale === 'ar' ? 'تفعيل' : 'Activate'}</Button><Button variant="danger" icon="lock" onClick={() => runBulk('suspend')} disabled={Boolean(bulkBusy)}>{locale === 'ar' ? 'إيقاف' : 'Suspend'}</Button><Button onClick={() => setSelected(new Set())}>{locale === 'ar' ? 'إلغاء التحديد' : 'Clear'}</Button></div></div> : can(workspace,'members.manage') && rows.length ? <div className="v7-bulk-idle"><Button icon="check" onClick={selectVisible}>{locale === 'ar' ? 'تحديد الظاهر' : 'Select visible'}</Button><span>{locale === 'ar' ? 'يمكن إدارة حتى 200 عضو في الإجراء الواحد.' : 'Up to 200 members can be managed in one action.'}</span></div> : null}
+      {bulkUndo && bulkUndo.expires >= Date.now() ? <div className="v7-undo-bar"><Icon name="refresh" size={15} /><span>{locale === 'ar' ? 'تم تطبيق آخر إجراء جماعي.' : 'Last bulk action applied.'}</span><Button onClick={undoBulk} disabled={Boolean(bulkBusy)}>{locale === 'ar' ? 'تراجع' : 'Undo'}</Button></div> : null}
+      {bulkError ? <div className="v7-inline-error">{bulkError}</div> : null}
+      {!directory ? <Skeleton lines={8} /> : rows.length ? <><div className="v7-people-head v7-people-head--select"><span /><span>{locale === 'ar' ? 'العضو' : 'Member'}</span><span>{locale === 'ar' ? 'الدور' : 'Role'}</span><span>{locale === 'ar' ? 'النطاق' : 'Scope'}</span><span>{tx(locale, 'status')}</span><span /></div><div className="v7-people-list v7-people-list--select">{rows.map(row => { const owner = row.role_slug === 'owner' || row.role_name_en === 'Owner'; return <div className="v7-person-row" key={row.membership_id}>{can(workspace,'members.manage') && !owner ? <label className="v7-row-check"><input type="checkbox" checked={selected.has(row.membership_id)} onChange={() => toggleSelected(row.membership_id)} aria-label={locale === 'ar' ? 'تحديد العضو' : 'Select member'} /><span /></label> : <span className="v7-row-check-placeholder" />}<button className="v7-person-open" aria-label={`${row.full_name || row.email || ''} · ${row.status || ''}`} onClick={() => openMember(row.membership_id)}><BrandAvatar path={row.avatar_path} name={row.full_name || row.email} size={38} /><span className="v7-person-name"><strong>{row.full_name || row.email || '—'}</strong><small>{row.job_title || row.department || row.employee_code || '—'}</small></span><span className="v7-person-role">{locale === 'ar' ? (row.role_name_ar || row.role_name_en) : (row.role_name_en || row.role_name_ar)}</span><span className="v7-person-scope">{row.primary_site_id ? (locale === 'ar' ? 'موقع محدد' : 'Site assigned') : (locale === 'ar' ? 'نطاق الشركة' : 'Company scope')}</span><Badge tone={statusTone(row.status)}>{row.status}</Badge><Icon name="chevron" size={15} /></button></div>; })}</div></> : <EmptyState icon="users" title={tx(locale, 'noMembers')} />}
       {directory ? <div className="v7-pagination"><span>{locale === 'ar' ? `صفحة ${page} من ${pages}` : `Page ${page} of ${pages}`}</span><div><Button onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))} disabled={offset === 0}>{locale === 'ar' ? 'السابق' : 'Previous'}</Button><Button onClick={() => setOffset(offset + PAGE_SIZE)} disabled={!directory.has_more}>{locale === 'ar' ? 'التالي' : 'Next'}</Button></div></div> : null}
     </Panel>
-    <MemberDetail membershipId={membershipId} locale={locale} onClose={closeMember} />
+    <MemberDetail membershipId={membershipId} locale={locale} workspace={workspace} onClose={closeMember} onManage={id => setControlMemberId(id)} />
+    <MemberControlSheet open={Boolean(controlMemberId)} onClose={() => setControlMemberId('')} workspace={workspace} membershipId={controlMemberId} locale={locale} onSaved={refresh} />
     <MemberInviteSheet open={inviteOpen} onClose={() => setInviteOpen(false)} workspace={workspace} roles={roles} locale={locale} onInvited={refresh} />
   </>;
 }

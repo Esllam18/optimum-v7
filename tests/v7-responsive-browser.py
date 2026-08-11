@@ -93,5 +93,24 @@ with sync_playwright() as p:
                 columns=page.locator(sel).evaluate("e=>getComputedStyle(e).gridTemplateColumns.split(' ').length")
                 if columns != 1: raise AssertionError(f'{name}: {sel} should stack to one column, got {columns}')
         page.close(); print(f'{name}: PASS overflow={overflow}px')
+    parity_fixture=(ROOT/'tests/visual/v7-parity-18-fixture.html').read_text()
+    parity_base=parity_fixture.replace('<link rel="stylesheet" href="../../src/v7/v7.css">', f'<style>{css}</style>')
+    parity_cases=[
+      ('parity18-desktop-light-rtl',1280,980,'light','rtl'),
+      ('parity18-mobile-dark-ltr',390,844,'dark','ltr'),
+    ]
+    for name,w,h,theme,direction in parity_cases:
+        html=parity_base.replace('data-theme="light"',f'data-theme="{theme}"',1).replace('dir="rtl"',f'dir="{direction}"',1).replace('class="v7-root" dir="rtl"',f'class="v7-root" dir="{direction}"',1)
+        page=browser.new_page(viewport={'width':w,'height':h},device_scale_factor=1)
+        page.set_content(html,wait_until='domcontentloaded',timeout=15000); page.wait_for_timeout(50)
+        overflow=page.evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')
+        if overflow>1: raise AssertionError(f'{name}: horizontal overflow {overflow}px')
+        for sel in ['.v7-bulk-bar','.v7-org-overview','.v7-member-control','.v7-claim-suggestions']:
+            box=page.locator(sel).first.bounding_box()
+            if not box or box['x'] < -1 or box['x']+box['width'] > w+1: raise AssertionError(f'{name}: {sel} escapes viewport: {box}')
+        if w<=680:
+            cols=page.locator('.v7-choice-grid').evaluate("e=>getComputedStyle(e).gridTemplateColumns.split(' ').length")
+            if cols != 1: raise AssertionError(f'{name}: member choice grid should stack, got {cols}')
+        page.close(); print(f'{name}: PASS overflow={overflow}px')
     browser.close()
 print('V7 responsive browser CSS smoke: PASS')
